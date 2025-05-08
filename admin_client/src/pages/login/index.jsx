@@ -5,7 +5,11 @@ import logo from "./images/logo.png";
 import "./index.less";
 export default class Login extends Component {
   onFinish = (values) => {
+    console.log("this.formRef", this.formRef);
     console.log("Received values of form: ", values);
+  };
+  resetForm = () => {
+    this.formRef.resetFields();
   };
   render() {
     return (
@@ -17,6 +21,7 @@ export default class Login extends Component {
         <section className="login-content">
           <div className="form-title">用户登录</div>
           <Form
+            ref={(e) => (this.formRef = e)}
             name="normal_login"
             className="login-form"
             initialValues={{
@@ -26,6 +31,7 @@ export default class Login extends Component {
           >
             <Form.Item
               name="username"
+              validateTrigger={["onBlur", "onChange"]}
               rules={[
                 {
                   required: true,
@@ -50,20 +56,57 @@ export default class Login extends Component {
             </Form.Item>
             <Form.Item
               name="password"
+              validateTrigger={["onBlur", "onChange"]}
               rules={[
+                // {
+                //   required: true,
+                //   whitespace: true,
+                //   message: "请输入密码",
+                // },
+                // {
+                //   min: 4,
+                //   max: 12,
+                //   message: "密码长度在4-12位之间",
+                // },
+                // {
+                //   pattern: /^[a-zA-Z0-9_]+$/,
+                //   message: "密码只能由数字、字母和下划线组成",
+                // },
+                // (_v, _v2) => ({
+                //   validator(_, value) {
+                //     const { getFieldValue } = _v;
+                //     console.log("@_v", _v, _v2);
+                //     console.log("@_", _);
+                //     console.log("@_value", value);
+                //     console.log("@getFieldValue password", getFieldValue("password"));
+                //     // console.log(value);
+
+                //     // if (!value || getFieldValue("password") === value) {
+                //     //   return Promise.resolve();
+                //     // }
+                //     // return Promise.reject(
+                //     //   new Error(
+                //     //     "The two passwords that you entered do not match!"
+                //     //   )
+                //     // );
+                //     return Promise.resolve();
+                //   },
+                // }),
                 {
-                  required: true,
-                  whitespace: true,
-                  message: "请输入密码",
-                },
-                {
-                  min: 4,
-                  max: 12,
-                  message: "密码长度在4-12位之间",
-                },
-                {
-                  pattern: /^[a-zA-Z0-9_]+$/,
-                  message: "密码只能由数字、字母和下划线组成",
+                  validator(_, value) {
+                    if (!value) {
+                      return Promise.reject(new Error("请输入密码"));
+                    }
+                    if (value.length < 4 || value.length > 12) {
+                      return Promise.reject(new Error("密码长度在4-12位之间"));
+                    }
+                    if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+                      return Promise.reject(
+                        new Error("密码只能由数字、字母和下划线组成")
+                      );
+                    }
+                    return Promise.resolve();
+                  },
                 },
               ]}
             >
@@ -80,6 +123,9 @@ export default class Login extends Component {
                 className="login-form-button"
               >
                 登录
+              </Button>
+              <Button type="default" onClick={this.resetForm} className="reset-form">
+                重置
               </Button>
             </Form.Item>
           </Form>
