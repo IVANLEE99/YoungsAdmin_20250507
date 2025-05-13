@@ -1,13 +1,14 @@
 import axios from "axios";
 import { message } from "antd";
+const baseURL = "/api";
 export const ajax = (url, data = {}, type = "GET") => {
   let promise;
   if (type === "GET") {
-    promise = axios.get(url, {
+    promise = axios.get(baseURL + url, {
       params: data,
     });
   } else {
-    promise = axios.post(url, data);
+    promise = axios.post(baseURL + url, data);
   }
   return new Promise((resolve, reject) => {
     promise

@@ -1,12 +1,23 @@
 import React, { Component } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import logo from "./images/logo.png";
 import "./index.less";
+import { login } from "../../api/login";
+
 export default class Login extends Component {
-  onFinish = (values) => {
-    console.log("this.formRef", this.formRef);
-    console.log("Received values of form: ", values);
+  onFinish = async (values) => {
+    let [err, res] = await login(values);
+    if (res) {
+      if (res.code === 0) {
+        message.success("登录成功");
+        this.props.navigate("/");
+      } else {
+        message.error(res.message);
+      }
+    } else {
+      message.error(err.message);
+    }
   };
   resetForm = () => {
     this.formRef.resetFields();
@@ -124,7 +135,11 @@ export default class Login extends Component {
               >
                 登录
               </Button>
-              <Button type="default" onClick={this.resetForm} className="reset-form">
+              <Button
+                type="default"
+                onClick={this.resetForm}
+                className="reset-form"
+              >
                 重置
               </Button>
             </Form.Item>
