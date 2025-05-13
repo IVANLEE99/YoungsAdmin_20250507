@@ -19,7 +19,7 @@ const md5 = require('blueimp-md5') // md5加密的函数
 // 1.1. 引入mongoose
 const mongoose = require('mongoose')
 // 1.2. 连接指定数据库(URL只有数据库是变化的)
-mongoose.connect('mongodb://localhost:27017/gzhipin_test')
+mongoose.connect('mongodb://localhost:27017/gzhipin2')
 // 1.3. 获取连接对象
 const conn = mongoose.connection
 // 1.4. 绑定连接完成的监听(用来提示连接成功)
@@ -43,7 +43,7 @@ const UserModel = mongoose.model('user', userSchema) // 集合的名称为: user
 // 3.1. 通过Model实例的save()添加数据
 function testSave() {
   // 创建UserModel的实例
-  const userModel = new UserModel({username: 'Bob', password: md5('234'), type: 'laoban'})
+  const userModel = new UserModel({username: 'admin', password: md5('admin'), type: 'admin'})
   // 调用save()保存
   userModel.save(function (error, user) {
     console.log('save()', error, user)
@@ -79,4 +79,4 @@ function testDelete() {
     console.log('remove()', error, doc) // {n: 1/0, ok: 1}
   })
 }
-testDelete()
+testSave()
