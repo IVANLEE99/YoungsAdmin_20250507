@@ -29,21 +29,19 @@ if (user && user._id) {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <StyleProvider hashPriority="high">
-    <React.StrictMode>
-      <ConfigProvider
-        theme={{
-          token: {
-            colorPrimary: "#1DA57A",
-          },
-        }}
-      >
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ConfigProvider>
-    </React.StrictMode>
-  </StyleProvider>
+  <React.StrictMode>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#1DA57A",
+        },
+      }}
+    >
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ConfigProvider>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

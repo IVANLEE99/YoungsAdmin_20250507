@@ -68,3 +68,45 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+
+## React 19 兼容
+https://ant.design/docs/react/v5-for-19-cn
+
+## 兼容旧版 Less（需手动配置）
+<!-- npm install @ant-design/cssinjs less less-loader --save-dev -->
+
+
+<!-- import { StyleProvider } from '@ant-design/cssinjs'; -->
+import { ConfigProvider } from 'antd';
+
+// 包裹根组件
+<!-- <StyleProvider hashPriority="high"> -->
+  <ConfigProvider>
+    <App />
+  </ConfigProvider>
+<!-- </StyleProvider> -->
+
+import "./index.less";
+
+
+const CracoLessPlugin = require("craco-less");
+
+module.exports = {
+  plugins: [
+    {
+      plugin: CracoLessPlugin,
+      options: {
+        lessLoaderOptions: {
+          lessOptions: {
+            modifyVars: { "@primary-color": "#00b96b" }, // ✅ 正确配置
+            javascriptEnabled: true,
+          },
+        },
+      },
+    },
+  ],
+  // 删除 webpack.configure 手动配置
+};
+
