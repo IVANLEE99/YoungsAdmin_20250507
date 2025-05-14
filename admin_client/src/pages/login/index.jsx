@@ -17,7 +17,7 @@ export default class Login extends Component {
         storageUtils.saveUser(res.data);
         this.props.navigate("/");
       } else {
-        message.error(res.message);
+        message.error(res.message || res.msg);
       }
     } else {
       message.error(err.message);
