@@ -2,7 +2,6 @@ import { useRoutes, useNavigate } from "react-router-dom";
 import React from "react";
 import "./App.less";
 import routes from "./routes";
-
 export default function App() {
   const navigate = useNavigate();
 

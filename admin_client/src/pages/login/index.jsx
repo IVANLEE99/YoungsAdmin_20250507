@@ -4,13 +4,17 @@ import { Button, Form, Input, message } from "antd";
 import logo from "./images/logo.png";
 import "./index.less";
 import { login } from "../../api/login";
-
+import memoryUtils from "../../utils/memoryUtils";
+import storageUtils from "../../utils/storageUtils";
+import { Navigate } from "react-router-dom";
 export default class Login extends Component {
   onFinish = async (values) => {
     let [err, res] = await login(values);
     if (res) {
       if (res.code === 0) {
         message.success("登录成功");
+        memoryUtils.user = res.data;
+        storageUtils.saveUser(res.data);
         this.props.navigate("/");
       } else {
         message.error(res.message);
@@ -23,6 +27,10 @@ export default class Login extends Component {
     this.formRef.resetFields();
   };
   render() {
+    const user = memoryUtils.user;
+    if (user && user._id) {
+      return <Navigate to="/" />;
+    }
     return (
       <div className="login">
         <header className="login-header">

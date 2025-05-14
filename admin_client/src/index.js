@@ -4,6 +4,13 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
+import memoryUtils from "./utils/memoryUtils";
+import storageUtils from "./utils/storageUtils";
+
+const user = storageUtils.getUser();
+if (user && user._id) {
+  memoryUtils.user = user;
+}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
