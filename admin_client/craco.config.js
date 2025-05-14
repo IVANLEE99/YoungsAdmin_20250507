@@ -14,4 +14,26 @@ module.exports = {
       },
     },
   ],
+  //   webpack: {
+  //     configure: (webpackConfig) => {
+  //       console.log("@@@", webpackConfig);
+  //       webpackConfig.module.rules.push({
+  //         test: /\.less$/,
+  //         use: [
+  //           "style-loader",
+  //           "css-loader",
+  //           {
+  //             loader: "less-loader",
+  //             options: {
+  //               lessOptions: {
+  //                 modifyVars: { "@primary-color": "#00b96b" }, // 覆盖变量
+  //                 javascriptEnabled: true,
+  //               },
+  //             },
+  //           },
+  //         ],
+  //       });
+  //       return webpackConfig;
+  //     },
+  //   },
 };
