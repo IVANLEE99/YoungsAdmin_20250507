@@ -5,6 +5,10 @@ import Category from "../pages/category";
 import Product from "../pages/product";
 import Role from "../pages/role";
 import Charts from "../pages/charts";
+import Bar from "../pages/charts/bar";
+import Line from "../pages/charts/line";
+import Pie from "../pages/charts/pie";
+
 import User from "../pages/user";
 
 const routes = [
@@ -17,7 +21,19 @@ const routes = [
       { path: "/category", element: <Category /> },
       { path: "/product", element: <Product /> },
       { path: "/role", element: <Role /> },
-      { path: "/charts", element: <Charts /> },
+      {
+        path: "/charts", element: <Charts />, children: [
+          {
+            path: "bar", element: <Bar />
+          },
+          {
+            path: "line", element: <Line />
+          },
+          {
+            path: "pie", element: <Pie />
+          },
+        ]
+      },
       { path: "/user", element: <User /> },
     ],
   },

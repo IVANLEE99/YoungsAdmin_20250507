@@ -23,19 +23,19 @@ const menuList = [
     children: [
       {
         title: "商品分类",
-        key: "/products/category",
+        key: "/category",
         icon: <DesktopOutlined />,
       },
       {
         title: "商品管理",
-        key: "/products/product",
+        key: "/product",
         icon: <ContainerOutlined />,
       },
     ],
   },
   {
     title: "用户管理",
-    key: "/users",
+    key: "/user",
     icon: <UserOutlined />,
   },
   {
