@@ -35,6 +35,15 @@ root.render(
         token: {
           colorPrimary: "#1DA57A",
         },
+        // components: {
+        //   Layout: {
+        //     bodyBg: "#1DA57A",
+        //     footerBg: "#1DA57A",
+        //     headerBg: "#1DA57A",
+        //     siderBg: "#1DA57A",
+        //     algorithm: true, // 启用算法
+        //   },
+        // },
       }}
     >
       <BrowserRouter>

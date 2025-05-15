@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, message } from "antd";
-import logo from "./images/logo.png";
+import logo from "../../assets/images/logo.png";
 import "./index.less";
 import { login } from "../../api/login";
 import memoryUtils from "../../utils/memoryUtils";
