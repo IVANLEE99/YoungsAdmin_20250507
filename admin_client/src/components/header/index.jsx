@@ -1,7 +1,61 @@
 import React, { Component } from "react";
 import "./index.less";
+import { getIpAreaCoordJson, getWeather } from "../../api/weather";
+import getCityId from "../../utils/cityIds";
 
 export default class Header extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      weather: {},
+    };
+    this.getLocation();
+  }
+  getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          this.fetchWeather(longitude, latitude); // 传给后端
+        },
+        (error) => {
+          console.error("定位失败:", error.message);
+          alert("无法获取位置，将使用默认城市");
+          this.fetchWeather(); // 使用默认位置
+        }
+      );
+    } else {
+      alert("您的浏览器不支持地理定位");
+    }
+  };
+  fetchWeather = async (longitude, latitude) => {
+    const [err, res] = await getIpAreaCoordJson({
+      coords: `${longitude},${latitude}`,
+    });
+    console.log(err, res);
+    if (res && res.code === 200 && res.data && !res.data.error) {
+      let city = res.data.city;
+      const cityId = getCityId(city);
+      const [err2, res2] = await getWeather({
+        cityId,
+      });
+      if (
+        res2 &&
+        res2.code === 200 &&
+        res2.data &&
+        res2.data.value &&
+        res2.data.value[0]
+      ) {
+        this.setState({
+          weather: {
+            city: res.data.city,
+            cityId,
+            realtime: res2.data.value[0]?.realtime,
+          },
+        });
+      }
+    }
+  };
   render() {
     return (
       <div className="header">
@@ -19,12 +73,15 @@ export default class Header extends Component {
         <div className="header-bottom">
           <div className="header-bottom-left">首页</div>
           <div className="header-bottom-right">
-            <span>2025-05-18 12:00:00</span>
-            <img
-              src="https://gips2.baidu.com/it/u=3319407664,1312150496&fm=3028&app=3028&f=PNG&fmt=auto&q=100&size=f84_84"
-              alt=""
-            />
-            <span>晴</span>
+            <span className="header-bottom-right-time">
+              {this.state.weather.realtime?.time}
+            </span>
+            <span className="header-bottom-right-city">
+              {this.state.weather.city}
+            </span>
+            <span className="header-bottom-right-weather">
+              {this.state.weather.realtime?.weather}
+            </span>
           </div>
         </div>
       </div>
