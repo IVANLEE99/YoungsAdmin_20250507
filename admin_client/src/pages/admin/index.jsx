@@ -23,7 +23,7 @@ export default class Admin extends Component {
         </Sider>
         <Layout>
           <Header></Header>
-          <Content>
+          <Content style={{ margin: "20px 0", backgroundColor: "#fff" }}>
             <Outlet></Outlet>
           </Content>
           <Footer>Footer</Footer>

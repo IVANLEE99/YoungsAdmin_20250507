@@ -11,7 +11,7 @@ export default class Login extends Component {
   onFinish = async (values) => {
     let [err, res] = await login(values);
     if (res) {
-      if (res.code === 0) {
+      if (res.status === 0) {
         message.success("登录成功");
         memoryUtils.user = res.data;
         storageUtils.saveUser(res.data);
