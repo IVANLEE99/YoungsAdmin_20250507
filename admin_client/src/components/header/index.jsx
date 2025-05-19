@@ -4,13 +4,13 @@ import { getIpAreaCoordJson, getWeather } from "../../api/weather";
 import getCityId from "../../utils/cityIds";
 
 export default class Header extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      weather: {},
-    };
+  state = {
+    weather: {},
+  };
+  componentDidMount() {
     this.getLocation();
   }
+  // 获取位置
   getLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
