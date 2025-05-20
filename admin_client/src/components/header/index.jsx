@@ -84,7 +84,7 @@ class Header extends Component {
     }
   };
   getTime = () => {
-    setInterval(() => {
+    this.timer = setInterval(() => {
       this.setState({
         time: formatDate(),
       });
@@ -94,6 +94,13 @@ class Header extends Component {
     Modal.confirm({
       title: "提示",
       content: "确定要退出吗？",
+      okButtonProps: {
+        style: {
+          background: "#1DA57A", // 使用主题变量
+          borderColor: "#1DA57A",
+          boxShadow: "none",
+        },
+      },
       onOk: () => {
         storageUtils.removeUser();
         // 清除内存中的用户信息
@@ -103,6 +110,9 @@ class Header extends Component {
       },
     });
   };
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
   render() {
     const userName = memoryUtils.user.username;
     const title = this.getTitle(menuList);
