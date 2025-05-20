@@ -2,14 +2,38 @@ import React, { Component } from "react";
 import "./index.less";
 import { getIpAreaCoordJson, getWeather } from "../../api/weather";
 import getCityId from "../../utils/cityIds";
+import { formatDate } from "../../utils/dateUtils";
+import memoryUtils from "../../utils/memoryUtils";
+import withRouter from "../../utils/withRouter";
+import menuList from "../../config/menuConfig";
 
-export default class Header extends Component {
+class Header extends Component {
   state = {
+    time: formatDate(),
     weather: {},
   };
   componentDidMount() {
     this.getLocation();
+    this.getTime();
   }
+  getTitle = (menuList) => {
+    let path = this.props.location.pathname;
+    let title = "";
+    for (let i = 0; i < menuList.length; i++) {
+      let item = menuList[i];
+      if (item.key === path) {
+        title = item.title;
+        break;
+      }
+      if (item.children) {
+        title = this.getTitle(item.children);
+        if (title) {
+          break;
+        }
+      }
+    }
+    return title;
+  };
   // 获取位置
   getLocation = () => {
     if (navigator.geolocation) {
@@ -56,11 +80,20 @@ export default class Header extends Component {
       }
     }
   };
+  getTime = () => {
+    setInterval(() => {
+      this.setState({
+        time: formatDate(),
+      });
+    }, 1000);
+  };
   render() {
+    const userName = memoryUtils.user.username;
+    const title = this.getTitle(menuList);
     return (
       <div className="header">
         <div className="header-top">
-          <span>欢迎，admin</span>
+          <span>欢迎，{userName}</span>
           <a
             href="javascript:void(0)"
             onClick={() => {
@@ -71,11 +104,9 @@ export default class Header extends Component {
           </a>
         </div>
         <div className="header-bottom">
-          <div className="header-bottom-left">首页</div>
+          <div className="header-bottom-left">{title}</div>
           <div className="header-bottom-right">
-            <span className="header-bottom-right-time">
-              {this.state.weather.realtime?.time}
-            </span>
+            <span className="header-bottom-right-time">{this.state.time}</span>
             <span className="header-bottom-right-city">
               {this.state.weather.city}
             </span>
@@ -88,3 +119,4 @@ export default class Header extends Component {
     );
   }
 }
+export default withRouter(Header);
