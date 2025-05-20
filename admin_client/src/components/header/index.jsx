@@ -6,6 +6,8 @@ import { formatDate } from "../../utils/dateUtils";
 import memoryUtils from "../../utils/memoryUtils";
 import withRouter from "../../utils/withRouter";
 import menuList from "../../config/menuConfig";
+import { Modal } from "antd";
+import storageUtils from "../../utils/storageUtils";
 
 class Header extends Component {
   state = {
@@ -87,6 +89,19 @@ class Header extends Component {
       });
     }, 1000);
   };
+  logout = () => {
+    Modal.confirm({
+      title: "提示",
+      content: "确定要退出吗？",
+      onOk: () => {
+        storageUtils.removeUser();
+        // 清除内存中的用户信息
+        memoryUtils.user = {};
+        // 跳转到登录页面
+        this.props.navigate("/login");
+      },
+    });
+  };
   render() {
     const userName = memoryUtils.user.username;
     const title = this.getTitle(menuList);
@@ -94,14 +109,9 @@ class Header extends Component {
       <div className="header">
         <div className="header-top">
           <span>欢迎，{userName}</span>
-          <a
-            href="javascript:void(0)"
-            onClick={() => {
-              this.props.history.push("/login");
-            }}
-          >
+          <span className="logout" onClick={this.logout}>
             退出
-          </a>
+          </span>
         </div>
         <div className="header-bottom">
           <div className="header-bottom-left">{title}</div>
