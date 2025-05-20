@@ -8,6 +8,7 @@ import withRouter from "../../utils/withRouter";
 import menuList from "../../config/menuConfig";
 import { Modal } from "antd";
 import storageUtils from "../../utils/storageUtils";
+import LinkButton from "../linkButton";
 
 class Header extends Component {
   state = {
@@ -109,9 +110,7 @@ class Header extends Component {
       <div className="header">
         <div className="header-top">
           <span>欢迎，{userName}</span>
-          <span className="logout" onClick={this.logout}>
-            退出
-          </span>
+          <LinkButton onClick={this.logout}>退出</LinkButton>
         </div>
         <div className="header-bottom">
           <div className="header-bottom-left">{title}</div>
