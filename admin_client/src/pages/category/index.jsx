@@ -86,7 +86,7 @@ export default class Category extends Component {
     this.setState({ isLoading: false });
     console.log(err, res);
     if (err) {
-      message.error(err.message);
+      message.error(err.message || err.msg);
     } else {
       if (this.state.parentId === "0") {
         this.setState({
@@ -103,8 +103,31 @@ export default class Category extends Component {
   componentDidMount() {
     this.getCategoryList();
   }
-  handleAddOk = () => {
+  handleAddOk = async () => {
     console.log("handleAddOk");
+    const values = this.addFormRef?.current?.getFieldsValue();
+    console.log("values", values);
+    const [err, res] = await addCategory({
+      categoryName: values.name,
+      parentId: values.parentId,
+    });
+    if (err) {
+      message.error(err.message || err.msg);
+    } else if (res.status === 0) {
+      message.success("添加成功");
+      this.setState({ isShowAddModal: false });
+      if (values.parentId !== this.state.parentId) {
+        let { categoryList = [] } = this.state;
+        const target = categoryList.find(
+          (item) => item._id === values.parentId
+        );
+        if (target) {
+          this.showSubCategory(target);
+        }
+      } else {
+        this.getCategoryList();
+      }
+    }
   };
   handleAddCancel = () => {
     console.log("handleAddCancel");
@@ -174,11 +197,16 @@ export default class Category extends Component {
         <Modal
           title="添加分类"
           closable={{ "aria-label": "Custom Close Button" }}
+          destroyOnClose={true}
           open={this.state.isShowAddModal}
           onOk={this.handleAddOk}
           onCancel={this.handleAddCancel}
         >
-          <AddForm handleAddOk={this.handleAddOk} />
+          <AddForm
+            setFormRef={(formRef) => (this.addFormRef = formRef)}
+            categoryList={categoryList}
+            parentId={this.state.parentId}
+          />
         </Modal>
         <Modal
           title="更新分类"
