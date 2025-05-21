@@ -3,7 +3,7 @@ import { Card, Space, message } from "antd";
 import "./index.less";
 import LinkButton from "../../components/linkButton";
 import { PlusOutlined } from "@ant-design/icons";
-import { Table, Button } from "antd";
+import { Table, Button, Modal, Form, Input } from "antd";
 import { getCategoryList } from "../../api/category";
 export default class Category extends Component {
   state = {
@@ -35,7 +35,9 @@ export default class Category extends Component {
         width: 300,
         render: (value, record, index) => (
           <div>
-            <LinkButton onClick={() => this.showSubCategory(record)}>
+            <LinkButton
+              onClick={() => this.setState({ isShowUpdateModal: true })}
+            >
               修改分类
             </LinkButton>
             {this.state.parentId === "0" && (
@@ -51,6 +53,8 @@ export default class Category extends Component {
     parentId: "0",
     parentName: "",
     subCategoryList: [],
+    isShowAddModal: false,
+    isShowUpdateModal: false,
   };
   showSubCategory = (record) => {
     console.log("record", record);
@@ -87,7 +91,20 @@ export default class Category extends Component {
   componentDidMount() {
     this.getCategoryList();
   }
-
+  handleAddOk = () => {
+    console.log("handleAddOk");
+  };
+  handleAddCancel = () => {
+    console.log("handleAddCancel");
+    this.setState({ isShowAddModal: false });
+  };
+  handleUpdateOk = () => {
+    console.log("handleUpdateOk");
+  };
+  handleUpdateCancel = () => {
+    this.setState({ isShowUpdateModal: false });
+    console.log("handleUpdateCancel");
+  };
   render() {
     const { isLoading } = this.state;
     const title =
@@ -110,7 +127,7 @@ export default class Category extends Component {
         </span>
       );
     const extra = (
-      <LinkButton>
+      <LinkButton onClick={() => this.setState({ isShowAddModal: true })}>
         <PlusOutlined />
         添加分类
       </LinkButton>
@@ -129,6 +146,24 @@ export default class Category extends Component {
             loading={isLoading}
           />
         </Card>
+        <Modal
+          title="添加分类"
+          closable={{ "aria-label": "Custom Close Button" }}
+          open={this.state.isShowAddModal}
+          onOk={this.handleAddOk}
+          onCancel={this.handleAddCancel}
+        >
+          <p>添加分类</p>
+        </Modal>
+        <Modal
+          title="更新分类"
+          closable={{ "aria-label": "Custom Close Button" }}
+          open={this.state.isShowUpdateModal}
+          onOk={this.handleUpdateOk}
+          onCancel={this.handleUpdateCancel}
+        >
+          <p>更新分类</p>
+        </Modal>
       </div>
     );
   }
