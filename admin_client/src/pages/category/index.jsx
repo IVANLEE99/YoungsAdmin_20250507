@@ -33,27 +33,54 @@ export default class Category extends Component {
         dataIndex: "operation",
         key: "operation",
         width: 300,
-        render: () => (
+        render: (value, record, index) => (
           <div>
-            <LinkButton>修改分类</LinkButton>
-            <LinkButton>查看子分类</LinkButton>
+            <LinkButton onClick={() => this.showSubCategory(record)}>
+              修改分类
+            </LinkButton>
+            {this.state.parentId === "0" && (
+              <LinkButton onClick={() => this.showSubCategory(record)}>
+                查看子分类
+              </LinkButton>
+            )}
           </div>
         ),
       },
     ],
     isLoading: false,
+    parentId: "0",
+    parentName: "",
+    subCategoryList: [],
+  };
+  showSubCategory = (record) => {
+    console.log("record", record);
+    this.setState(
+      {
+        parentId: record._id,
+        parentName: record.name,
+      },
+      () => {
+        this.getCategoryList();
+      }
+    );
   };
   getCategoryList = async () => {
     this.setState({ isLoading: true });
-    const [err, res] = await getCategoryList();
+    const [err, res] = await getCategoryList(this.state.parentId);
     this.setState({ isLoading: false });
     console.log(err, res);
     if (err) {
       message.error(err.message);
     } else {
-      this.setState({
-        categoryList: res.data,
-      });
+      if (this.state.parentId === "0") {
+        this.setState({
+          categoryList: res.data,
+        });
+      } else {
+        this.setState({
+          subCategoryList: res.data,
+        });
+      }
     }
   };
   // 获取分类列表
@@ -63,21 +90,41 @@ export default class Category extends Component {
 
   render() {
     const { isLoading } = this.state;
-    const title = <h1>一级分类列表</h1>;
+    const title =
+      this.state.parentId === "0" ? (
+        <h1>一级分类列表</h1>
+      ) : (
+        <span>
+          <LinkButton
+            onClick={() =>
+              this.setState({
+                parentId: "0",
+                parentName: "",
+                subCategoryList: [],
+              })
+            }
+          >
+            一级分类列表
+          </LinkButton>
+          <span> -- {this.state.parentName}</span>
+        </span>
+      );
     const extra = (
       <LinkButton>
         <PlusOutlined />
         添加分类
       </LinkButton>
     );
-    const { categoryList, columns } = this.state;
+    const { categoryList, subCategoryList, columns } = this.state;
     return (
       <div className="category">
         <Card title={title} extra={extra} style={{ width: "100%" }}>
           <Table
             bordered
             rowKey="key"
-            dataSource={categoryList}
+            dataSource={
+              this.state.parentId === "0" ? categoryList : subCategoryList
+            }
             columns={columns}
             loading={isLoading}
           />
