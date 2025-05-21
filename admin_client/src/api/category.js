@@ -12,5 +12,5 @@ export const getCategoryList = (parentId = "0") =>
 export const addCategory = ({ categoryName, parentId }) =>
   ajax(RequestAddCategory, { categoryName, parentId }, "POST");
 //更新分类
-export const updateCategory = ({ categoryName, parentId }) =>
-  ajax(RequestUpdateCategory, { categoryName, parentId }, "POST");
+export const updateCategory = ({ categoryName, categoryId }) =>
+  ajax(RequestUpdateCategory, { categoryName, categoryId }, "POST");

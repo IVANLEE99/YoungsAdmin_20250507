@@ -4,7 +4,13 @@ import "./index.less";
 import LinkButton from "../../components/linkButton";
 import { PlusOutlined } from "@ant-design/icons";
 import { Table, Button, Modal, Form, Input } from "antd";
-import { getCategoryList } from "../../api/category";
+import {
+  getCategoryList,
+  updateCategory,
+  addCategory,
+} from "../../api/category";
+import AddForm from "./addForm";
+import UpdateForm from "./updateForm";
 export default class Category extends Component {
   state = {
     categoryList: [
@@ -36,7 +42,12 @@ export default class Category extends Component {
         render: (value, record, index) => (
           <div>
             <LinkButton
-              onClick={() => this.setState({ isShowUpdateModal: true })}
+              onClick={() => {
+                this.setState({
+                  isShowUpdateModal: true,
+                  currentCategory: record,
+                });
+              }}
             >
               修改分类
             </LinkButton>
@@ -55,6 +66,7 @@ export default class Category extends Component {
     subCategoryList: [],
     isShowAddModal: false,
     isShowUpdateModal: false,
+    currentCategory: {},
   };
   showSubCategory = (record) => {
     console.log("record", record);
@@ -98,8 +110,21 @@ export default class Category extends Component {
     console.log("handleAddCancel");
     this.setState({ isShowAddModal: false });
   };
-  handleUpdateOk = () => {
+  handleUpdateOk = async () => {
     console.log("handleUpdateOk");
+    const categoryName = this.updateFormRef?.current?.getFieldValue("name");
+    console.log("categoryName", categoryName);
+    const [err, res] = await updateCategory({
+      categoryId: this.state.currentCategory._id,
+      categoryName,
+    });
+    if (err) {
+      message.error(err.message);
+    } else if (res.status === 0) {
+      message.success("更新成功");
+      this.setState({ isShowUpdateModal: false });
+      this.getCategoryList();
+    }
   };
   handleUpdateCancel = () => {
     this.setState({ isShowUpdateModal: false });
@@ -153,16 +178,21 @@ export default class Category extends Component {
           onOk={this.handleAddOk}
           onCancel={this.handleAddCancel}
         >
-          <p>添加分类</p>
+          <AddForm handleAddOk={this.handleAddOk} />
         </Modal>
         <Modal
           title="更新分类"
           closable={{ "aria-label": "Custom Close Button" }}
+          destroyOnClose={true}
           open={this.state.isShowUpdateModal}
           onOk={this.handleUpdateOk}
           onCancel={this.handleUpdateCancel}
         >
-          <p>更新分类</p>
+          <UpdateForm
+            handleUpdateOk={this.handleUpdateOk}
+            setFormRef={(formRef) => (this.updateFormRef = formRef)}
+            categoryName={this.state.currentCategory.name}
+          />
         </Modal>
       </div>
     );
