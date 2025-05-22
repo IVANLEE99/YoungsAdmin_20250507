@@ -104,42 +104,48 @@ export default class Category extends Component {
     this.getCategoryList();
   }
   handleAddOk = async () => {
-    console.log("handleAddOk");
-    const values = this.addFormRef?.current?.getFieldsValue();
-    console.log("values", values);
-    const [err, res] = await addCategory({
-      categoryName: values.name,
-      parentId: values.parentId,
-    });
-    if (err) {
-      message.error(err.message || err.msg);
-    } else if (res.status === 0) {
-      message.success("添加成功");
-      this.setState({ isShowAddModal: false });
+    let fn = async (values) => {
+      console.log("handleAddOk");
+      const [err, res] = await addCategory({
+        categoryName: values.name,
+        parentId: values.parentId,
+      });
+      if (err) {
+        message.error(err.message || err.msg);
+      } else if (res.status === 0) {
+        message.success("添加成功");
+        this.setState({ isShowAddModal: false });
 
-      //二级选一级添加
-      if (
-        this.state.parentId !== "0" &&
-        values.parentId !== this.state.parentId
-      ) {
-        this.getCategoryList("0");
-      }
-      //一级选二级添加
-      if (
-        this.state.parentId === "0" &&
-        values.parentId !== this.state.parentId
-      ) {
-        let { categoryList = [] } = this.state;
-        const target = categoryList.find(
-          (item) => item._id === values.parentId
-        );
-        if (target) {
-          this.showSubCategory(target);
+        //二级选一级添加
+        if (
+          this.state.parentId !== "0" &&
+          values.parentId !== this.state.parentId
+        ) {
+          this.getCategoryList("0");
         }
-      } else if (values.parentId === this.state.parentId) {
-        this.getCategoryList();
+        //一级选二级添加
+        if (
+          this.state.parentId === "0" &&
+          values.parentId !== this.state.parentId
+        ) {
+          let { categoryList = [] } = this.state;
+          const target = categoryList.find(
+            (item) => item._id === values.parentId
+          );
+          if (target) {
+            this.showSubCategory(target);
+          }
+        } else if (values.parentId === this.state.parentId) {
+          this.getCategoryList();
+        }
       }
-    }
+    };
+    this.addFormRef?.current
+      ?.validateFields()
+      .then(fn)
+      .catch((err) => {
+        console.error("err", err);
+      });
   };
   handleAddCancel = () => {
     console.log("handleAddCancel");
@@ -147,19 +153,27 @@ export default class Category extends Component {
   };
   handleUpdateOk = async () => {
     console.log("handleUpdateOk");
-    const categoryName = this.updateFormRef?.current?.getFieldValue("name");
-    console.log("categoryName", categoryName);
-    const [err, res] = await updateCategory({
-      categoryId: this.state.currentCategory._id,
-      categoryName,
-    });
-    if (err) {
-      message.error(err.message);
-    } else if (res.status === 0) {
-      message.success("更新成功");
-      this.setState({ isShowUpdateModal: false });
-      this.getCategoryList();
-    }
+    let fn = async (values) => {
+      const categoryName = values.name;
+      console.log("categoryName", categoryName);
+      const [err, res] = await updateCategory({
+        categoryId: this.state.currentCategory._id,
+        categoryName,
+      });
+      if (err) {
+        message.error(err.message);
+      } else if (res.status === 0) {
+        message.success("更新成功");
+        this.setState({ isShowUpdateModal: false });
+        this.getCategoryList();
+      }
+    };
+    this.updateFormRef?.current
+      ?.validateFields()
+      .then(fn)
+      .catch((err) => {
+        console.error("err", err);
+      });
   };
   handleUpdateCancel = () => {
     this.setState({ isShowUpdateModal: false });

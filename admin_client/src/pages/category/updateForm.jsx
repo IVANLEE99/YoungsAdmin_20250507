@@ -14,7 +14,11 @@ export default class UpdateForm extends Component {
     return (
       <div>
         <Form layout="vertical" ref={this.formRef} preserve={false}>
-          <Form.Item label="分类名称" name="name">
+          <Form.Item
+            label="分类名称"
+            name="name"
+            rules={[{ required: true, message: "请输入分类名称" }]}
+          >
             <Input defaultValue={this.props.categoryName} />
           </Form.Item>
         </Form>

@@ -22,7 +22,11 @@ export default class AddForm extends Component {
           preserve={false}
           onFinish={(values) => this.props.handleAddOk(values)}
         >
-          <Form.Item label="所属分类" name="parentId">
+          <Form.Item
+            label="所属分类"
+            name="parentId"
+            rules={[{ required: true, message: "请选择所属分类" }]}
+          >
             <Select>
               <Select.Option value="0">一级分类</Select.Option>
               {categoryList.map((item) => (
@@ -32,7 +36,11 @@ export default class AddForm extends Component {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item label="分类名称" name="name">
+          <Form.Item
+            label="分类名称"
+            name="name"
+            rules={[{ required: true, message: "请输入分类名称" }]}
+          >
             <Input />
           </Form.Item>
         </Form>
