@@ -24,5 +24,10 @@ export const updateStatus = ({ productId, status }) =>
 export const getProductDetail = (productId) =>
   ajax(RequestProductDetail, { productId });
 //搜索商品
-export const searchProduct = (productName) =>
-  ajax(RequestProductSearch, { productName });
+export const searchProduct = (
+  pageNum,
+  pageSize = PAGE_SIZE,
+  searchName,
+  searchType
+) =>
+  ajax(RequestProductSearch, { pageNum, pageSize, [searchType]: searchName });

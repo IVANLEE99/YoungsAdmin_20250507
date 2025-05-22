@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import LinkButton from "../../components/linkButton";
-import { getProductList, updateStatus } from "../../api/product";
+import { getProductList, updateStatus, searchProduct } from "../../api/product";
 import { PAGE_SIZE } from "../../utils/constant";
 
 export default class Home extends Component {
@@ -85,7 +85,7 @@ export default class Home extends Component {
     ],
     isLoading: false,
     searchName: "",
-    searchType: "1",
+    searchType: "productName",
     pageNum: 1,
     total: 0,
     columns: [
@@ -141,7 +141,18 @@ export default class Home extends Component {
   }
   getProductList = async (pageNum = 1) => {
     this.setState({ isLoading: true });
-    const [err, res] = await getProductList(pageNum);
+    const { searchType, searchName } = this.state;
+    let err, res;
+    if (searchName) {
+      [err, res] = await searchProduct(
+        pageNum,
+        PAGE_SIZE,
+        searchName,
+        searchType
+      );
+    } else {
+      [err, res] = await getProductList(pageNum);
+    }
     this.setState({ isLoading: false });
     if (err) {
       message.error(err.message || err.msg);
@@ -159,12 +170,28 @@ export default class Home extends Component {
   render() {
     const title = (
       <Space>
-        <Select style={{ width: 150 }}>
-          <Select.Option value="1">按名称搜索</Select.Option>
-          <Select.Option value="2">按价格搜索</Select.Option>
+        <Select
+          style={{ width: 150 }}
+          value={this.state.searchType}
+          onChange={(value) => this.setState({ searchType: value })}
+        >
+          <Select.Option value="productName">按名称搜索</Select.Option>
+          <Select.Option value="productDesc">按描述搜索</Select.Option>
         </Select>
-        <Input placeholder="关键字" />
-        <Button type="primary">搜索</Button>
+        <Input
+          placeholder="关键字"
+          value={this.state.searchName}
+          onChange={(e) => this.setState({ searchName: e.target.value })}
+        />
+        <Button
+          type="primary"
+          onClick={() => {
+            this.setState({ pageNum: 1 });
+            this.getProductList();
+          }}
+        >
+          搜索
+        </Button>
       </Space>
     );
     const extra = (
