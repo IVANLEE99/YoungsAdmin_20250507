@@ -1,12 +1,8 @@
 import React, { Component } from "react";
 import "./index.less";
-
+import { Outlet } from "react-router-dom";
 export default class Product extends Component {
   render() {
-    return (
-      <div>
-        <h1>商品管理</h1>
-      </div>
-    );
+    return <Outlet />;
   }
 }

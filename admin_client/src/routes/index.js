@@ -2,6 +2,10 @@ import Login from "../pages/login";
 import Admin from "../pages/admin";
 import Home from "../pages/home";
 import Category from "../pages/category";
+import ProductDetail from "../pages/product/detail";
+import ProductAddUpdate from "../pages/product/add-update";
+import ProductHome from "../pages/product/home";
+
 import Product from "../pages/product";
 import Role from "../pages/role";
 import Charts from "../pages/charts";
@@ -20,7 +24,16 @@ const routes = [
       { index: true, element: <Navigate to="/home" replace /> },
       { path: "/home", element: <Home /> },
       { path: "/category", element: <Category /> },
-      { path: "/product", element: <Product /> },
+      {
+        path: "/product",
+        element: <Product />,
+        children: [
+          { path: "/product", element: <ProductHome />, index: true },
+          { path: "detail", element: <ProductDetail /> },
+          { path: "add-update", element: <ProductAddUpdate /> },
+          { path: "*", element: <Navigate to="/product" replace /> },
+        ],
+      },
       { path: "/role", element: <Role /> },
       {
         path: "/charts",
