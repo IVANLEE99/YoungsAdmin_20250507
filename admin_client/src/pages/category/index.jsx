@@ -80,9 +80,9 @@ export default class Category extends Component {
       }
     );
   };
-  getCategoryList = async () => {
+  getCategoryList = async (parentId = this.state.parentId) => {
     this.setState({ isLoading: true });
-    const [err, res] = await getCategoryList(this.state.parentId);
+    const [err, res] = await getCategoryList(parentId);
     this.setState({ isLoading: false });
     console.log(err, res);
     if (err) {
@@ -116,7 +116,19 @@ export default class Category extends Component {
     } else if (res.status === 0) {
       message.success("添加成功");
       this.setState({ isShowAddModal: false });
-      if (values.parentId !== this.state.parentId) {
+
+      //二级选一级添加
+      if (
+        this.state.parentId !== "0" &&
+        values.parentId !== this.state.parentId
+      ) {
+        this.getCategoryList("0");
+      }
+      //一级选二级添加
+      if (
+        this.state.parentId === "0" &&
+        values.parentId !== this.state.parentId
+      ) {
         let { categoryList = [] } = this.state;
         const target = categoryList.find(
           (item) => item._id === values.parentId
@@ -124,7 +136,7 @@ export default class Category extends Component {
         if (target) {
           this.showSubCategory(target);
         }
-      } else {
+      } else if (values.parentId === this.state.parentId) {
         this.getCategoryList();
       }
     }
@@ -192,6 +204,11 @@ export default class Category extends Component {
             }
             columns={columns}
             loading={isLoading}
+            pagination={{
+              pageSize: 10,
+              showTotal: (total) => `共${total}条`,
+              showQuickJumper: true,
+            }}
           />
         </Card>
         <Modal
