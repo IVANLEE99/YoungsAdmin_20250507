@@ -14,6 +14,10 @@ import Line from "../pages/charts/line";
 import Pie from "../pages/charts/pie";
 import User from "../pages/user";
 import { Navigate } from "react-router-dom";
+import withRouter from "../utils/withRouter";
+const ProductHomeWithRouter = withRouter(ProductHome);
+const ProductDetailWithRouter = withRouter(ProductDetail);
+const ProductAddUpdateWithRouter = withRouter(ProductAddUpdate);
 const routes = [
   { path: "/login", element: <Login /> },
   {
@@ -28,9 +32,9 @@ const routes = [
         path: "/product",
         element: <Product />,
         children: [
-          { path: "/product", element: <ProductHome />, index: true },
-          { path: "detail", element: <ProductDetail /> },
-          { path: "add-update", element: <ProductAddUpdate /> },
+          { path: "/product", element: <ProductHomeWithRouter />, index: true },
+          { path: "detail/:productId", element: <ProductDetailWithRouter /> },
+          { path: "add-update", element: <ProductAddUpdateWithRouter /> },
           { path: "*", element: <Navigate to="/product" replace /> },
         ],
       },

@@ -17,7 +17,7 @@ export default class Admin extends Component {
       return <Navigate to="/login" />;
     }
     return (
-      <Layout style={{ height: "100%" }}>
+      <Layout style={{ height: "100%", minHeight: "100vh" }}>
         <Sider width="25%">
           <LeftNav></LeftNav>
         </Sider>

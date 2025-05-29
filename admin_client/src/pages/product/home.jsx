@@ -125,7 +125,15 @@ export default class Home extends Component {
         width: 100,
         render: (product) => (
           <Space wrap>
-            <LinkButton to={`/product/add-update?productId=${product._id}`}>
+            <LinkButton
+              onClick={() =>
+                this.props.navigate(`/product/detail/${product._id}`, {
+                  state: {
+                    product,
+                  },
+                })
+              }
+            >
               详情
             </LinkButton>
             <LinkButton to={`/product/add-update?productId=${product._id}`}>
