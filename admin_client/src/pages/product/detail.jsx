@@ -4,6 +4,7 @@ import { List } from "antd";
 import { getProductDetail } from "../../api/product";
 import { BASE_IMG_URL } from "../../utils/constant";
 import { getCategoryInfo } from "../../api/category";
+import LinkButton from "../../components/linkButton";
 
 export default class Detail extends Component {
   state = {
@@ -67,7 +68,8 @@ export default class Detail extends Component {
     const { cName1, cName2 } = this.state;
     const title = (
       <h1>
-        <span onClick={() => this.props.navigate(-1)}>⬅️</span> 商品详情
+        <LinkButton onClick={() => this.props.navigate(-1)}>⬅️</LinkButton>
+        商品详情
       </h1>
     );
     return (

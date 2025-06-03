@@ -219,7 +219,10 @@ export default class Home extends Component {
     );
     const extra = (
       <div>
-        <Button type="primary">
+        <Button
+          type="primary"
+          onClick={() => this.props.navigate("/product/add-update")}
+        >
           <PlusOutlined />
           添加商品
         </Button>
