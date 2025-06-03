@@ -1,12 +1,60 @@
 import React, { Component } from "react";
-import { Card, Space } from "antd";
+import { Card, Space, message } from "antd";
 import { List } from "antd";
 import { getProductDetail } from "../../api/product";
 import { BASE_IMG_URL } from "../../utils/constant";
+import { getCategoryInfo } from "../../api/category";
 
 export default class Detail extends Component {
+  state = {
+    cName1: "",
+    cName2: "",
+  };
   componentDidMount() {
     // this.getProductDetail();
+    const { pCategoryId, categoryId } = this.props.location.state.product;
+    if (pCategoryId === "0") {
+      getCategoryInfo(categoryId)
+        .then(([err, res]) => {
+          if (err) {
+            console.error(err);
+            message.error("获取分类信息失败");
+          } else {
+            this.setState({ cName1: res.data.name });
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          message.error("获取分类信息失败");
+        });
+    } else {
+      getCategoryInfo(pCategoryId)
+        .then(([err, res]) => {
+          if (err) {
+            console.error(err);
+            message.error("获取分类信息失败");
+          } else {
+            this.setState({ cName1: res.data.name });
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          message.error("获取分类信息失败");
+        });
+      getCategoryInfo(categoryId)
+        .then(([err, res]) => {
+          if (err) {
+            console.error(err);
+            message.error("获取分类信息失败");
+          } else {
+            this.setState({ cName2: res.data.name });
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          message.error("获取分类信息失败");
+        });
+    }
   }
   getProductDetail = async () => {
     const result = await getProductDetail(this.props.productId);
@@ -16,6 +64,7 @@ export default class Detail extends Component {
     const { product } = this.props.location.state;
     console.log(product);
     const { name, desc, price, imgs, detail, categoryId } = product;
+    const { cName1, cName2 } = this.state;
     const title = (
       <h1>
         <span onClick={() => this.props.navigate(-1)}>⬅️</span> 商品详情
@@ -46,7 +95,9 @@ export default class Detail extends Component {
             <List.Item>
               <div>
                 <span>所属分类：</span>
-                <span>{categoryId}</span>
+                <span>
+                  {cName1} {cName2 ? " / " + cName2 : ""}
+                </span>
               </div>
             </List.Item>
             <List.Item>
