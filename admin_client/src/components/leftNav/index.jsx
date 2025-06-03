@@ -12,16 +12,16 @@ class LeftNav extends Component {
     this.openKey = [];
     this.MyMenuList = this.getItem(menuList);
   }
-  getItem_map = (menuList) => {
-    return menuList.map((item) => {
-      return {
-        key: item.key,
-        icon: item.icon,
-        label: item.title,
-        children: item.children ? this.getItem_map(item.children) : null,
-      };
-    });
-  };
+  // getItem_map = (menuList) => {
+  //   return menuList.map((item) => {
+  //     return {
+  //       key: item.key,
+  //       icon: item.icon,
+  //       label: item.title,
+  //       children: item.children ? this.getItem_map(item.children) : null,
+  //     };
+  //   });
+  // };
   getItem = (menuList) => {
     let path = this.props.location.pathname;
     return menuList.reduce((pre, item) => {
@@ -36,7 +36,7 @@ class LeftNav extends Component {
         children: item.children ? this.getItem(item.children) : null,
       });
       if (item.children && !this.openKey.length) {
-        let _item = item.children.find((i) => i.key === path);
+        let _item = item.children.find((i) => path.indexOf(i.key) === 0);
         if (_item) {
           this.openKey = [item.key];
         }
@@ -47,6 +47,10 @@ class LeftNav extends Component {
   };
   render() {
     const path = this.props.location.pathname;
+    let selectedKeys = [path];
+    if (path.indexOf("/product") === 0) {
+      selectedKeys = ["/product"];
+    }
     return (
       <div className="left-nav">
         <Link to="/" className="left-nav-header">
@@ -54,7 +58,7 @@ class LeftNav extends Component {
           <h1>后台管理系统</h1>
         </Link>
         <Menu
-          selectedKeys={[path]}
+          selectedKeys={selectedKeys}
           defaultOpenKeys={this.openKey}
           mode="inline"
           theme="dark"
