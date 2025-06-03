@@ -107,13 +107,14 @@ export default class Home extends Component {
         dataIndex: "status",
         width: 100,
         render: (status, product) => {
+          const newStatus = status === 1 ? 2 : 1;
           return (
             <Space wrap align="center" style={{ justifyContent: "center" }}>
               <Button
                 type="link"
-                onClick={() => this.handleStatus(product._id, status)}
+                onClick={() => this.handleStatus(product._id, newStatus)}
               >
-                下架
+                {status === 1 ? "下架" : "上架"}
               </Button>
               <span>{status === 1 ? "在售" : "下架"}</span>
             </Space>
@@ -147,7 +148,21 @@ export default class Home extends Component {
   componentDidMount() {
     this.getProductList();
   }
+  handleStatus = async (productId, status) => {
+    try {
+      const [err, res] = await updateStatus({ productId, status });
+      if (err) {
+        message.error(err.message || err.msg);
+      } else {
+        message.success("更新状态成功");
+        this.getProductList(this.pageNum);
+      }
+    } catch (error) {
+      message.error(error.message);
+    }
+  };
   getProductList = async (pageNum = 1) => {
+    this.pageNum = pageNum;
     this.setState({ isLoading: true });
     const { searchType, searchName } = this.state;
     let err, res;
