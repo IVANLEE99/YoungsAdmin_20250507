@@ -6,6 +6,12 @@ import { addProduct } from "../../api/product";
 import LinkButton from "../../components/linkButton";
 const { TextArea } = Input;
 export default class AddUpdate extends Component {
+  static propTypes = {};
+  formRef = React.createRef();
+  componentDidMount() {}
+  handleSubmit = () => {
+    this.formRef.current.submit();
+  };
   render() {
     const formItemLayout = {
       labelCol: { span: 3 },
@@ -20,33 +26,49 @@ export default class AddUpdate extends Component {
     return (
       <div>
         <Card title={title}>
-          <Form {...formItemLayout}>
+          <Form {...formItemLayout} ref={this.formRef}>
             <Form.Item
               label="商品名称"
-              name="productName"
-              rules={[{ required: true }]}
+              name="name"
+              rules={[{ required: true, message: "商品名称不能为空" }]}
+              validateTrigger={["onBlur", "onChange"]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               label="商品描述"
-              name="productDesc"
-              rules={[{ required: true }]}
+              name="desc"
+              rules={[{ required: true, message: "商品描述不能为空" }]}
+              validateTrigger={["onBlur", "onChange"]}
             >
               <TextArea autoSize={{ minRows: 2 }} />
             </Form.Item>
             <Form.Item
               label="商品价格"
-              name="productPrice"
-              rules={[{ required: true }]}
+              name="price"
+              rules={[{ required: true, message: "商品价格不能为空" }]}
+              validateTrigger={["onBlur", "onChange"]}
             >
-              <InputNumber addonAfter="元" min={0} style={{ width: "100%" }} />
+              <InputNumber
+                addonAfter="元"
+                min={0.01}
+                style={{ width: "100%" }}
+              />
             </Form.Item>
-            {/* <Form.Item label="商品图片" name="productImg">
-              <Upload>
-                <Button icon={<UploadOutlined />}>上传图片</Button>
-              </Upload>
-            </Form.Item> */}
+            <Form.Item label="商品分类" name="categoryId">
+              商品分类
+            </Form.Item>
+            <Form.Item label="商品图片" name="imgs">
+              商品图片
+            </Form.Item>
+            <Form.Item label="商品详情" name="detail">
+              商品详情
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 8, span: 3 }}>
+              <Button type="primary" onClick={this.handleSubmit}>
+                提交
+              </Button>
+            </Form.Item>
           </Form>
         </Card>
       </div>
