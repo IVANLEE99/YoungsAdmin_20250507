@@ -137,7 +137,18 @@ export default class Home extends Component {
             >
               详情
             </LinkButton>
-            <LinkButton to={`/product/add-update?productId=${product._id}`}>
+            <LinkButton
+              onClick={() =>
+                this.props.navigate(
+                  `/product/add-update?productId=${product._id}`,
+                  {
+                    state: {
+                      product,
+                    },
+                  }
+                )
+              }
+            >
               修改
             </LinkButton>
           </Space>

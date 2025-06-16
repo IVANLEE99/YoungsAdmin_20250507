@@ -18,23 +18,14 @@ const { TextArea } = Input;
 export default class AddUpdate extends Component {
   static propTypes = {};
   state = {
-    optionLists: [
-      {
-        value: "zhejiang",
-        label: "Zhejiang",
-        isLeaf: false,
-      },
-      {
-        value: "jiangsu",
-        label: "Jiangsu",
-        isLeaf: false,
-      },
-    ],
+    initialValues: {},
+    product: {},
+    optionLists: [],
   };
   formRef = React.createRef();
   getCategoryList = async (parentId = "0") => {
     const [err, res] = await getCategoryList(parentId);
-    console.log(err, res);
+    console.log("getCategoryList", err, res);
     if (err) {
       message.error(err.message || err.msg);
       return;
@@ -57,11 +48,54 @@ export default class AddUpdate extends Component {
       optionLists,
     });
   };
-  componentDidMount() {
-    this.getCategoryList();
+  async componentDidMount() {
+    await this.getCategoryList();
+    const product = this.props?.location?.state?.product || {};
+    console.log("product", product);
+    if (product._id) {
+      this.setState({
+        product,
+      });
+      this.product = product;
+      this.isUpdate = true;
+      const { name, desc, price, imgs, detail, pCategoryId, categoryId } =
+        this.product;
+      let categoryIds = [];
+      if (pCategoryId !== "0") {
+        categoryIds.push(pCategoryId);
+      }
+      if (categoryId) {
+        categoryIds.push(categoryId);
+      }
+      this.setState(
+        {
+          initialValues: {
+            name,
+            desc,
+            price,
+            imgs,
+            detail,
+            categoryIds: this.isUpdate ? categoryIds : [],
+          },
+        },
+        () => {
+          this.formRef?.current?.setFieldsValue(this.state.initialValues);
+        }
+      );
+    } else {
+      this.isUpdate = false;
+    }
+    console.log("this.isUpdate", this.isUpdate);
   }
   handleSubmit = () => {
-    this.formRef.current.submit();
+    this.formRef?.current
+      ?.validateFields()
+      .then((value) => {
+        console.log(value);
+      })
+      .catch((err) => {
+        console.error("err", err);
+      });
   };
   loadData = async (selectedOptions) => {
     // console.log(selectedOptions);
@@ -111,13 +145,20 @@ export default class AddUpdate extends Component {
     const title = (
       <h1>
         <LinkButton onClick={() => this.props.navigate(-1)}>⬅️</LinkButton>
-        添加商品
+        {this.isUpdate ? "编辑商品" : "添加商品"}
       </h1>
     );
+    const { product, initialValues } = this.state;
+    const { name, desc, price, imgs, detail, pCategoryId, categoryId } =
+      product;
     return (
       <div>
         <Card title={title}>
-          <Form {...formItemLayout} ref={this.formRef}>
+          <Form
+            {...formItemLayout}
+            ref={this.formRef}
+            initialValues={initialValues}
+          >
             <Form.Item
               label="商品名称"
               name="name"
@@ -146,20 +187,21 @@ export default class AddUpdate extends Component {
                 style={{ width: "100%" }}
               />
             </Form.Item>
-            <Form.Item label="商品分类" name="categoryId">
+            <Form.Item label="商品分类" name="categoryIds">
               <Cascader
+                labelInValue
                 options={this.state.optionLists}
                 loadData={this.loadData}
                 onChange={this.onChange}
                 changeOnSelect
               />
             </Form.Item>
-            <Form.Item label="商品图片" name="imgs">
+            {/* <Form.Item label="商品图片" name="imgs">
               商品图片
             </Form.Item>
             <Form.Item label="商品详情" name="detail">
               商品详情
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item wrapperCol={{ offset: 8, span: 3 }}>
               <Button type="primary" onClick={this.handleSubmit}>
                 提交
