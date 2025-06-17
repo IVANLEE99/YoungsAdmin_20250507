@@ -1,1 +1,2 @@
-export const UploadImg = "/manage/img/upload";
+export const ReqDeleteImg = "/manage/img/delete";
+export const ReqUploadImg = "/manage/img/upload";

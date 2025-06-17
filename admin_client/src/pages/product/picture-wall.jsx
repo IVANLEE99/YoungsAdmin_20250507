@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Image, Upload, message } from "antd";
 import { forwardRef, useImperativeHandle } from "react";
-import { UploadImg } from "../../api/urls/manage";
+import { ReqUploadImg } from "../../api/urls/manage";
 import { baseURL } from "../../api/ajax";
+import { deleteImg } from "../../api/manage";
 
 var __awaiter =
   (this && this.__awaiter) ||
@@ -57,7 +58,7 @@ const App = forwardRef((props, ref) => {
       setPreviewImage(file.url || file.preview);
       setPreviewOpen(true);
     });
-  const handleChange = ({ file, fileList: newFileList, event }) => {
+  const handleChange = async ({ file, fileList: newFileList, event }) => {
     console.log("file", file);
     console.log("newFileList", newFileList);
     console.log(
@@ -66,12 +67,21 @@ const App = forwardRef((props, ref) => {
     );
     console.log("event", event);
     if (file.status === "done") {
-      const { data } = file.response;
-      message.success("上传成功");
-      file.url = data.url;
-      file.name = data.name;
-    } else if (file.status === "error") {
-      message.error("上传失败");
+      const { data, status } = file.response;
+      if (status === 0) {
+        message.success("上传成功");
+        file.url = data.url;
+        file.name = data.name;
+      } else {
+        message.error("上传失败");
+      }
+    } else if (file.status === "removed") {
+      let [err, res] = await deleteImg(file.name);
+      if (res && res.status === 0) {
+        message.success("删除成功");
+      } else {
+        message.error("删除失败");
+      }
     }
     setFileList(newFileList);
   };
@@ -91,7 +101,7 @@ const App = forwardRef((props, ref) => {
   return (
     <>
       <Upload
-        action={`${baseURL}${UploadImg}`}
+        action={`${baseURL}${ReqUploadImg}`}
         listType="picture-card"
         accept="image/*"
         name="image"
