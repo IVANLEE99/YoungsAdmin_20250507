@@ -1,3 +1,4 @@
+import PictureWall from "./picture-wall";
 import React, { Component } from "react";
 import {
   Card,
@@ -23,6 +24,7 @@ export default class AddUpdate extends Component {
     optionLists: [],
   };
   formRef = React.createRef();
+  pictureWallRef = React.createRef();
   getCategoryList = async (parentId = "0") => {
     const [err, res] = await getCategoryList(parentId);
     console.log("getCategoryList", err, res);
@@ -38,18 +40,34 @@ export default class AddUpdate extends Component {
       }
     }
   };
-  initOptionLists = (data) => {
+  initOptionLists = async (data) => {
     const optionLists = data.map((item) => ({
       value: item._id,
       label: item.name,
       isLeaf: false,
     }));
+    const { isUpdate, product } = this;
+    const { pCategoryId, categoryId } = product;
+    if (isUpdate && pCategoryId !== "0") {
+      const targetOption = optionLists.find(
+        (item) => item.value === pCategoryId
+      );
+      if (targetOption) {
+        const children = await this.getCategoryList(pCategoryId);
+        targetOption.children = children.map((i) => {
+          return {
+            label: i.name,
+            value: i._id,
+            isLeaf: false,
+          };
+        });
+      }
+    }
     this.setState({
       optionLists,
     });
   };
   async componentDidMount() {
-    await this.getCategoryList();
     const product = this.props?.location?.state?.product || {};
     console.log("product", product);
     if (product._id) {
@@ -58,6 +76,11 @@ export default class AddUpdate extends Component {
       });
       this.product = product;
       this.isUpdate = true;
+    } else {
+      this.isUpdate = false;
+    }
+    await this.getCategoryList();
+    if (this.isUpdate) {
       const { name, desc, price, imgs, detail, pCategoryId, categoryId } =
         this.product;
       let categoryIds = [];
@@ -82,16 +105,17 @@ export default class AddUpdate extends Component {
           this.formRef?.current?.setFieldsValue(this.state.initialValues);
         }
       );
-    } else {
-      this.isUpdate = false;
     }
-    console.log("this.isUpdate", this.isUpdate);
   }
   handleSubmit = () => {
     this.formRef?.current
       ?.validateFields()
       .then((value) => {
         console.log(value);
+        console.log("this.pictureWallRef", this.pictureWallRef);
+        const imgs = this.pictureWallRef?.current?.getImgList();
+
+        console.log("imgs", imgs);
       })
       .catch((err) => {
         console.error("err", err);
@@ -196,12 +220,12 @@ export default class AddUpdate extends Component {
                 changeOnSelect
               />
             </Form.Item>
-            {/* <Form.Item label="商品图片" name="imgs">
-              商品图片
+            <Form.Item label="商品图片" name="imgs">
+              <PictureWall ref={this.pictureWallRef} />
             </Form.Item>
             <Form.Item label="商品详情" name="detail">
               商品详情
-            </Form.Item> */}
+            </Form.Item>
             <Form.Item wrapperCol={{ offset: 8, span: 3 }}>
               <Button type="primary" onClick={this.handleSubmit}>
                 提交

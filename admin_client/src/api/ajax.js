@@ -1,6 +1,6 @@
 import axios from "axios";
 import { message } from "antd";
-const baseURL = "/api";
+export const baseURL = "/api";
 export const ajax = (url, data = {}, type = "GET") => {
   let promise;
   if (type === "GET") {
