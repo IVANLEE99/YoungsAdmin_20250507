@@ -5,6 +5,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { ReqUploadImg } from "../../api/urls/manage";
 import { baseURL } from "../../api/ajax";
 import { deleteImg } from "../../api/manage";
+import { BASE_IMG_URL } from "../../utils/constant";
 
 var __awaiter =
   (this && this.__awaiter) ||
@@ -49,7 +50,17 @@ const getBase64 = (file) =>
 const App = forwardRef((props, ref) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
-  const [fileList, setFileList] = useState([]);
+  const _fileList = props.imgs || [];
+  let imgList = _fileList.map((item, index) => {
+    return {
+      url: BASE_IMG_URL + item,
+      name: item,
+      uid: -index,
+      status: "done",
+    };
+  });
+  console.log("props", props, _fileList, imgList);
+  const [fileList, setFileList] = useState(imgList);
   const handlePreview = (file) =>
     __awaiter(void 0, void 0, void 0, function* () {
       if (!file.url && !file.preview) {

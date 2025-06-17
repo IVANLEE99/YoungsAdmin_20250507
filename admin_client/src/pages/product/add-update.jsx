@@ -221,7 +221,7 @@ export default class AddUpdate extends Component {
               />
             </Form.Item>
             <Form.Item label="商品图片" name="imgs">
-              <PictureWall ref={this.pictureWallRef} />
+              <PictureWall ref={this.pictureWallRef} imgs={imgs} />
             </Form.Item>
             <Form.Item label="商品详情" name="detail">
               商品详情
