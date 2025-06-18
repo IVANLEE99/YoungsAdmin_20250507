@@ -1,4 +1,5 @@
 import PictureWall from "./picture-wall";
+import RichTextEditor from "./rich-text-editor";
 import React, { Component } from "react";
 import {
   Card,
@@ -223,8 +224,13 @@ export default class AddUpdate extends Component {
             <Form.Item label="商品图片" name="imgs">
               <PictureWall ref={this.pictureWallRef} imgs={imgs} />
             </Form.Item>
-            <Form.Item label="商品详情" name="detail">
-              商品详情
+            <Form.Item
+              label="商品详情"
+              name="detail"
+              labelCol={{ span: 3 }}
+              wrapperCol={{ span: 20 }}
+            >
+              <RichTextEditor detail={detail} />
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 8, span: 3 }}>
               <Button type="primary" onClick={this.handleSubmit}>
