@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Image, Upload, message } from "antd";
 import { forwardRef, useImperativeHandle } from "react";
@@ -50,17 +50,20 @@ const getBase64 = (file) =>
 const App = forwardRef((props, ref) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
-  const _fileList = props.imgs || [];
-  let imgList = _fileList.map((item, index) => {
-    return {
-      url: BASE_IMG_URL + item,
-      name: item,
-      uid: -index,
-      status: "done",
-    };
-  });
-  console.log("props", props, _fileList, imgList);
-  const [fileList, setFileList] = useState(imgList);
+  const [fileList, setFileList] = useState([]);
+  useEffect(() => {
+    const _fileList = props.imgs || [];
+    let imgList = _fileList.map((item, index) => {
+      return {
+        url: BASE_IMG_URL + item,
+        name: item,
+        uid: -index,
+        status: "done",
+      };
+    });
+    setFileList(imgList);
+  }, [props.imgs]);
+  //   console.log("props", props, _fileList, imgList);
   const handlePreview = (file) =>
     __awaiter(void 0, void 0, void 0, function* () {
       if (!file.url && !file.preview) {
@@ -70,13 +73,13 @@ const App = forwardRef((props, ref) => {
       setPreviewOpen(true);
     });
   const handleChange = async ({ file, fileList: newFileList, event }) => {
-    console.log("file", file);
-    console.log("newFileList", newFileList);
-    console.log(
-      "file === newFileList[newFileList.length - 1]",
-      file === newFileList[newFileList.length - 1]
-    );
-    console.log("event", event);
+    // console.log("file", file);
+    // console.log("newFileList", newFileList);
+    // console.log(
+    //   "file === newFileList[newFileList.length - 1]",
+    //   file === newFileList[newFileList.length - 1]
+    // );
+    // console.log("event", event);
     if (file.status === "done") {
       const { data, status } = file.response;
       if (status === 0) {

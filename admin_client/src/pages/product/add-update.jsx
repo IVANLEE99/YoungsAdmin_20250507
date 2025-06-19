@@ -26,6 +26,7 @@ export default class AddUpdate extends Component {
   };
   formRef = React.createRef();
   pictureWallRef = React.createRef();
+  richTextEditorRef = React.createRef();
   getCategoryList = async (parentId = "0") => {
     const [err, res] = await getCategoryList(parentId);
     console.log("getCategoryList", err, res);
@@ -115,8 +116,10 @@ export default class AddUpdate extends Component {
         console.log(value);
         console.log("this.pictureWallRef", this.pictureWallRef);
         const imgs = this.pictureWallRef?.current?.getImgList();
+        const detail = this.richTextEditorRef?.current?.getDetail();
 
         console.log("imgs", imgs);
+        console.log("detail", detail);
       })
       .catch((err) => {
         console.error("err", err);
@@ -176,6 +179,7 @@ export default class AddUpdate extends Component {
     const { product, initialValues } = this.state;
     const { name, desc, price, imgs, detail, pCategoryId, categoryId } =
       product;
+    console.log("detail---", detail);
     return (
       <div>
         <Card title={title}>
@@ -214,7 +218,6 @@ export default class AddUpdate extends Component {
             </Form.Item>
             <Form.Item label="商品分类" name="categoryIds">
               <Cascader
-                labelInValue
                 options={this.state.optionLists}
                 loadData={this.loadData}
                 onChange={this.onChange}
@@ -230,7 +233,7 @@ export default class AddUpdate extends Component {
               labelCol={{ span: 3 }}
               wrapperCol={{ span: 20 }}
             >
-              <RichTextEditor detail={detail} />
+              <RichTextEditor detail={detail} ref={this.richTextEditorRef} />
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 8, span: 3 }}>
               <Button type="primary" onClick={this.handleSubmit}>

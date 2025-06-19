@@ -3,29 +3,59 @@ import { Editor } from "react-draft-wysiwyg";
 import { EditorState, ContentState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 // import draftToHtml from "draftjs-to-html";
-import draftToHtml from 'draftjs-to-html';
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 export default class RichTextEditor extends Component {
-  state = {
-    editorState: EditorState.createEmpty(),
-  };
+  constructor(props) {
+    super(props);
+    console.log(props, "props");
+    // https://jpuri.github.io/react-draft-wysiwyg/#/docs
+    let html = props.detail || "";
+    const contentBlock = htmlToDraft(html);
+    if (contentBlock) {
+      const contentState = ContentState.createFromBlockArray(
+        contentBlock.contentBlocks
+      );
+      const editorState = EditorState.createWithContent(contentState);
+      this.state = {
+        editorState,
+      };
+    } else {
+      this.state = {
+        editorState: EditorState.createEmpty(),
+      };
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.detail !== this.props.detail) {
+      let html = this.props.detail || "";
+      const contentBlock = htmlToDraft(html);
+      if (contentBlock) {
+        const contentState = ContentState.createFromBlockArray(
+          contentBlock.contentBlocks
+        );
+        const editorState = EditorState.createWithContent(contentState);
+        const newEditorState = EditorState.createWithContent(contentState);
+        this.setState({ editorState: newEditorState });
+      } else {
+        this.setState({
+          editorState: EditorState.createEmpty(),
+        });
+      }
+    }
+  }
   onEditorStateChange = (editorState) => {
     this.setState({
       editorState,
     });
   };
-  componentDidMount() {
-    if (this.props.detail) {
-      this.setState({
-        editorState: EditorState.createWithContent(
-          ContentState.createFromText(this.props.detail)
-        ),
-      });
-    } else {
-      this.setState({
-        editorState: EditorState.createEmpty(),
-      });
-    }
-  }
+  getDetail = () => {
+    return draftToHtml(
+      convertToRaw(this.state.editorState.getCurrentContent())
+    );
+  };
+  componentDidMount() {}
   render() {
     return (
       <div>
@@ -41,10 +71,12 @@ export default class RichTextEditor extends Component {
           }}
           onEditorStateChange={this.onEditorStateChange}
         />
-        <textarea
+        {/* <textarea
           disabled
-          value={draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()))}
-        />
+          value={draftToHtml(
+            convertToRaw(this.state.editorState.getCurrentContent())
+          )}
+        /> */}
       </div>
     );
   }
