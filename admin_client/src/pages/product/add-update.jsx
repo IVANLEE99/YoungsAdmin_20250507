@@ -13,12 +13,13 @@ import {
 } from "antd";
 
 import { UploadOutlined } from "@ant-design/icons";
-import { addProduct } from "../../api/product";
+import { addProduct, updateProduct } from "../../api/product";
 import LinkButton from "../../components/linkButton";
 import { getCategoryList } from "../../api/category";
 const { TextArea } = Input;
 export default class AddUpdate extends Component {
   static propTypes = {};
+  product = {};
   state = {
     initialValues: {},
     product: {},
@@ -112,14 +113,39 @@ export default class AddUpdate extends Component {
   handleSubmit = () => {
     this.formRef?.current
       ?.validateFields()
-      .then((value) => {
-        console.log(value);
-        console.log("this.pictureWallRef", this.pictureWallRef);
+      .then(async (value) => {
         const imgs = this.pictureWallRef?.current?.getImgList();
         const detail = this.richTextEditorRef?.current?.getDetail();
-
-        console.log("imgs", imgs);
-        console.log("detail", detail);
+        let product = {
+          imgs,
+          name: value.name,
+          desc: value.desc,
+          price: value.price,
+          detail,
+          pCategoryId:
+            value.categoryIds.length > 1 ? value.categoryIds[0] : "0",
+          categoryId:
+            value.categoryIds.length > 1
+              ? value.categoryIds[1]
+              : value.categoryIds[0],
+        };
+        let err, res;
+        if (this.isUpdate) {
+          product._id = this.product._id;
+          [err, res] = await updateProduct(product);
+        } else {
+          [err, res] = await addProduct(product);
+        }
+        if (err) {
+          message.error(err.message || err.msg);
+          return;
+        }
+        if (res.status === 0) {
+          message.success(this.isUpdate ? "编辑成功" : "添加成功");
+          this.props.navigate(-1);
+        } else {
+          message.error(this.isUpdate ? "编辑失败" : "添加失败");
+        }
       })
       .catch((err) => {
         console.error("err", err);
@@ -177,8 +203,15 @@ export default class AddUpdate extends Component {
       </h1>
     );
     const { product, initialValues } = this.state;
-    const { name, desc, price, imgs, detail, pCategoryId, categoryId } =
-      product;
+    const {
+      name,
+      desc,
+      price,
+      imgs,
+      detail = "",
+      pCategoryId,
+      categoryId,
+    } = product;
     console.log("detail---", detail);
     return (
       <div>
@@ -194,7 +227,7 @@ export default class AddUpdate extends Component {
               rules={[{ required: true, message: "商品名称不能为空" }]}
               validateTrigger={["onBlur", "onChange"]}
             >
-              <Input />
+              <Input placeholder="请输入商品名称" />
             </Form.Item>
             <Form.Item
               label="商品描述"
@@ -202,7 +235,10 @@ export default class AddUpdate extends Component {
               rules={[{ required: true, message: "商品描述不能为空" }]}
               validateTrigger={["onBlur", "onChange"]}
             >
-              <TextArea autoSize={{ minRows: 2 }} />
+              <TextArea
+                placeholder="请输入商品描述"
+                autoSize={{ minRows: 2 }}
+              />
             </Form.Item>
             <Form.Item
               label="商品价格"
@@ -214,6 +250,7 @@ export default class AddUpdate extends Component {
                 addonAfter="元"
                 min={0.01}
                 style={{ width: "100%" }}
+                placeholder="请输入商品价格"
               />
             </Form.Item>
             <Form.Item label="商品分类" name="categoryIds">
@@ -222,6 +259,7 @@ export default class AddUpdate extends Component {
                 loadData={this.loadData}
                 onChange={this.onChange}
                 changeOnSelect
+                placeholder="请选择商品分类"
               />
             </Form.Item>
             <Form.Item label="商品图片" name="imgs">
