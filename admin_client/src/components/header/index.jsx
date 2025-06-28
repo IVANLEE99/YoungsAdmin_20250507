@@ -24,7 +24,7 @@ class Header extends Component {
     let title = "";
     for (let i = 0; i < menuList.length; i++) {
       let item = menuList[i];
-      if (item.key === path) {
+      if (path.indexOf(item.key) === 0) {
         title = item.title;
         break;
       }
