@@ -8,34 +8,45 @@ export default class AddForm extends Component {
     setFormRef: PropTypes.func.isRequired,
     role: PropTypes.object.isRequired,
   };
-  treeData = [
-    {
-      title: "平台权限",
-      key: "all",
-      disabled: false,
-      children: menuList
-        ? menuList.map((item) => {
-            return {
-              title: item.title,
-              key: item.key,
-              disabled: false,
-              children: item.children
-                ? item.children.map((child) => ({
-                    title: child.title,
-                    key: child.key,
-                    disabled: false,
-                  }))
-                : null,
-            };
-          })
-        : null,
-    },
-  ];
-  formRef = React.createRef();
-  componentDidMount() {
-    this.props.setFormRef(this.formRef);
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      checkedKeys: [],
+    };
+    this.formRef = React.createRef();
+    this.treeData = [
+      {
+        title: "平台权限",
+        key: "all",
+        disabled: false,
+        children: menuList
+          ? menuList.map((item) => {
+              return {
+                title: item.title,
+                key: item.key,
+                disabled: false,
+                children: item.children
+                  ? item.children.map((child) => ({
+                      title: child.title,
+                      key: child.key,
+                      disabled: false,
+                    }))
+                  : null,
+              };
+            })
+          : null,
+      },
+    ];
+    let { menus } = this.props.role;
+    if (menus) {
+      console.log("menus", menus);
+      this.state.checkedKeys = menus;
+    }
   }
+  getMenus = () => this.state.checkedKeys;
   render() {
+    console.log("this.state.checkedKeys", this.state.checkedKeys);
     return (
       <div>
         <Form
@@ -55,7 +66,13 @@ export default class AddForm extends Component {
             <Input />
           </Form.Item>
         </Form>
-        <Tree checkable defaultExpandAll treeData={this.treeData} />
+        <Tree
+          checkable
+          defaultExpandAll
+          treeData={this.treeData}
+          checkedKeys={this.state.checkedKeys}
+          onCheck={(checkedKeys) => this.setState({ checkedKeys })}
+        />
       </div>
     );
   }

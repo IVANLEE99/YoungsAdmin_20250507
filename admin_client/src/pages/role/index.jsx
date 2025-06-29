@@ -14,7 +14,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import LinkButton from "../../components/linkButton";
 import AddForm from "./addForm";
 import AuthForm from "./authForm";
-import { getRoleList, addRole } from "../../api/role";
+import { getRoleList, addRole, updateRole } from "../../api/role";
 import { PAGE_SIZE } from "../../utils/constant";
 
 export default class Role extends Component {
@@ -78,7 +78,7 @@ export default class Role extends Component {
         }));
         this.addFormRef.current.resetFields();
       } else {
-        message.error(res.message || err.message);
+        message.error(res.message || err?.message);
       }
 
       // console.log("handleAddOk");
@@ -127,10 +127,29 @@ export default class Role extends Component {
     this.setState({ isShowAddModal: false });
     this.addFormRef.current.resetFields();
   };
-  handleAuthOk = () => {
+  handleAuthOk = async () => {
     console.log("handleAuthOk");
     this.setState({ isShowAuthModal: false });
     // this.authFormRef.current.resetFields();
+    let menus = this.authFormRef.current.getMenus();
+    let [err, res] = await updateRole({
+      ...this.state.selectedRole,
+      menus,
+    });
+    if (res && res.status === 0) {
+      message.success("设置成功");
+      this.setState({
+        roles: this.state.roles.map((role) => {
+          if (role._id === this.state.selectedRole._id) {
+            return res.data;
+          }
+          return role;
+        }),
+      });
+      this.setState({ selectedRole: res.data });
+    } else {
+      message.error(res?.message || res?.msg || err?.message || err?.msg);
+    }
   };
   handleAuthCancel = () => {
     console.log("handleAuthCancel");
@@ -145,7 +164,7 @@ export default class Role extends Component {
     if (res && res.status === 0) {
       this.setState({ roles: res.data });
     } else {
-      message.error(res.message || err.message);
+      message.error(res?.message || res?.msg || err?.message || err?.msg);
     }
   };
   componentDidMount() {
@@ -225,10 +244,7 @@ export default class Role extends Component {
           onOk={this.handleAuthOk}
           onCancel={this.handleAuthCancel}
         >
-          <AuthForm
-            setFormRef={(formRef) => (this.authFormRef = formRef)}
-            role={this.state.selectedRole}
-          />
+          <AuthForm ref={this.authFormRef} role={this.state.selectedRole} />
         </Modal>
       </div>
     );
