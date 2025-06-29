@@ -12,11 +12,14 @@ import {
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import LinkButton from "../../components/linkButton";
-import { getRoleList } from "../../api/role";
+import AddForm from "./addForm";
+import { getRoleList, addRole } from "../../api/role";
 import { PAGE_SIZE } from "../../utils/constant";
 
 export default class Role extends Component {
   state = {
+    isShowAddModal: false,
+    isShowAuthModal: false,
     roles: [
       // {
       //   menus: ["/role", "/charts/bar", "/home", "/category", "/user"],
@@ -59,6 +62,69 @@ export default class Role extends Component {
     isLoading: false,
     selectedRowKeys: [],
   };
+  addFormRef = React.createRef();
+  handleAddOk = async () => {
+    let fn = async (values) => {
+      console.log("values", values);
+      let { roleName } = values;
+      let [err, res] = await addRole(roleName);
+      if (res && res.status === 0) {
+        message.success("添加成功");
+        this.setState({ isShowAddModal: false });
+        this.setState((state, props) => ({
+          roles: [...state.roles, res.data],
+        }));
+        this.addFormRef.current.resetFields();
+      } else {
+        message.error(res.message || err.message);
+      }
+
+      // console.log("handleAddOk");
+      // const [err, res] = await addCategory({
+      //   categoryName: values.name,
+      //   parentId: values.parentId,
+      // });
+      // if (err) {
+      //   message.error(err.message || err.msg);
+      // } else if (res.status === 0) {
+      //   message.success("添加成功");
+      //   this.setState({ isShowAddModal: false });
+      //   //二级选一级添加
+      //   if (
+      //     this.state.parentId !== "0" &&
+      //     values.parentId !== this.state.parentId
+      //   ) {
+      //     this.getCategoryList("0");
+      //   }
+      //   //一级选二级添加
+      //   if (
+      //     this.state.parentId === "0" &&
+      //     values.parentId !== this.state.parentId
+      //   ) {
+      //     let { categoryList = [] } = this.state;
+      //     const target = categoryList.find(
+      //       (item) => item._id === values.parentId
+      //     );
+      //     if (target) {
+      //       this.showSubCategory(target);
+      //     }
+      //   } else if (values.parentId === this.state.parentId) {
+      //     this.getCategoryList();
+      //   }
+      // }
+    };
+    this.addFormRef?.current
+      ?.validateFields()
+      .then(fn)
+      .catch((err) => {
+        console.error("err", err);
+      });
+  };
+  handleAddCancel = () => {
+    console.log("handleAddCancel");
+    this.setState({ isShowAddModal: false });
+    this.addFormRef.current.resetFields();
+  };
   getRoleList = async (pageNum = 1) => {
     // this.setState({ isLoading: true });
     // const [err, res] = await getRoleList(pageNum);
@@ -84,8 +150,17 @@ export default class Role extends Component {
   render() {
     const title = (
       <Space>
-        <Button type="primary">添加角色</Button>
-        <Button type="primary" disabled>
+        <Button
+          type="primary"
+          onClick={() => this.setState({ isShowAddModal: true })}
+        >
+          添加角色
+        </Button>
+        <Button
+          type="primary"
+          disabled={!this.state.selectedRole._id}
+          onClick={() => this.setState({ isShowAuthModal: true })}
+        >
           设置角色权限
         </Button>
       </Space>
@@ -120,6 +195,16 @@ export default class Role extends Component {
             }}
           />
         </Card>
+        <Modal
+          title="添加角色"
+          closable={{ "aria-label": "Custom Close Button" }}
+          destroyOnClose={true}
+          open={this.state.isShowAddModal}
+          onOk={this.handleAddOk}
+          onCancel={this.handleAddCancel}
+        >
+          <AddForm setFormRef={(formRef) => (this.addFormRef = formRef)} />
+        </Modal>
       </div>
     );
   }
