@@ -13,6 +13,7 @@ import {
 import { PlusOutlined } from "@ant-design/icons";
 import LinkButton from "../../components/linkButton";
 import AddForm from "./addForm";
+import AuthForm from "./authForm";
 import { getRoleList, addRole } from "../../api/role";
 import { PAGE_SIZE } from "../../utils/constant";
 
@@ -63,6 +64,7 @@ export default class Role extends Component {
     selectedRowKeys: [],
   };
   addFormRef = React.createRef();
+  authFormRef = React.createRef();
   handleAddOk = async () => {
     let fn = async (values) => {
       console.log("values", values);
@@ -124,6 +126,16 @@ export default class Role extends Component {
     console.log("handleAddCancel");
     this.setState({ isShowAddModal: false });
     this.addFormRef.current.resetFields();
+  };
+  handleAuthOk = () => {
+    console.log("handleAuthOk");
+    this.setState({ isShowAuthModal: false });
+    // this.authFormRef.current.resetFields();
+  };
+  handleAuthCancel = () => {
+    console.log("handleAuthCancel");
+    this.setState({ isShowAuthModal: false });
+    // this.authFormRef.current.resetFields();
   };
   getRoleList = async (pageNum = 1) => {
     // this.setState({ isLoading: true });
@@ -204,6 +216,19 @@ export default class Role extends Component {
           onCancel={this.handleAddCancel}
         >
           <AddForm setFormRef={(formRef) => (this.addFormRef = formRef)} />
+        </Modal>
+        <Modal
+          title="设置角色权限"
+          closable={{ "aria-label": "Custom Close Button" }}
+          destroyOnClose={true}
+          open={this.state.isShowAuthModal}
+          onOk={this.handleAuthOk}
+          onCancel={this.handleAuthCancel}
+        >
+          <AuthForm
+            setFormRef={(formRef) => (this.authFormRef = formRef)}
+            role={this.state.selectedRole}
+          />
         </Modal>
       </div>
     );
