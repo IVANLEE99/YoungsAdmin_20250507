@@ -15,8 +15,9 @@ import LinkButton from "../../components/linkButton";
 import AddForm from "./addForm";
 import AuthForm from "./authForm";
 import { getRoleList, addRole, updateRole } from "../../api/role";
+import moment from "moment";
 import { PAGE_SIZE } from "../../utils/constant";
-
+import memoryUtils from "../../utils/memoryUtils";
 export default class Role extends Component {
   state = {
     isShowAddModal: false,
@@ -50,10 +51,16 @@ export default class Role extends Component {
       {
         title: "创建时间",
         dataIndex: "create_time",
+        render: (create_time) => {
+          return moment(create_time).format("YYYY-MM-DD HH:mm:ss");
+        },
       },
       {
         title: "授权时间",
         dataIndex: "auth_time",
+        render: (auth_time) => {
+          return moment(auth_time).format("YYYY-MM-DD HH:mm:ss");
+        },
       },
       {
         title: "授权人",
@@ -135,6 +142,7 @@ export default class Role extends Component {
     let [err, res] = await updateRole({
       ...this.state.selectedRole,
       menus,
+      auth_name: memoryUtils.user.username,
     });
     if (res && res.status === 0) {
       message.success("设置成功");
