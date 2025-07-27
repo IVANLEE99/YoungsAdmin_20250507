@@ -5,8 +5,8 @@ import LinkButton from "../../components/linkButton";
 import { PlusOutlined } from "@ant-design/icons";
 import { Table, Button, Modal, Form, Input } from "antd";
 import { getUserList, updateUser, addUser, deleteUser } from "../../api/user";
-import AddForm from "./addForm";
-import UpdateForm from "./updateForm";
+import UserForm from "./UserForm";
+import UpdateUserForm from "./UpdateUserForm";
 import { formatDate } from "../../utils/dateUtils";
 export default class Category extends Component {
   state = {
@@ -51,13 +51,13 @@ export default class Category extends Component {
               onClick={() => {
                 this.setState({
                   isShowUpdateModal: true,
-                  currentCategory: record,
+                  currentUser: record,
                 });
               }}
             >
               修改
             </LinkButton>
-            <LinkButton onClick={() => this.deleteUser(record._id)}>
+            <LinkButton onClick={() => this.deleteUser(record)}>
               删除
             </LinkButton>
           </div>
@@ -68,6 +68,7 @@ export default class Category extends Component {
     isShowAddModal: false,
     isShowUpdateModal: false,
   };
+  // 获取用户列表
   getUserList = async () => {
     this.setState({ isLoading: true });
     const [err, res] = await getUserList();
@@ -87,46 +88,56 @@ export default class Category extends Component {
       }, {});
     }
   };
-  // 获取分类列表
+  // 删除用户
+  deleteUser = async (user) => {
+    let fn = async () => {
+      const [err, res] = await deleteUser(user._id);
+      if (err) {
+        message.error(err.message || err.msg);
+      } else if (res.status === 0) {
+        message.success("删除成功");
+        this.getUserList();
+      }
+    };
+    Modal.confirm({
+      title: "提示",
+      content: `确定要删除该用户吗？${user.username}`,
+      onOk: fn,
+    });
+  };
+  // 添加用户
+  addUser = async (user) => {
+    const [err, res] = await addUser(user);
+    if (err) {
+      message.error(err.message || err.msg);
+    } else if (res.status === 0) {
+      message.success("添加成功");
+      this.setState({ isShowAddModal: false });
+      this.getUserList();
+    }
+  };
+  // 获取用户列表
   componentDidMount() {
     this.getUserList();
   }
   handleAddOk = async () => {
     let fn = async (values) => {
-      console.log("handleAddOk");
+      console.log("handleAddOk", values);
       const [err, res] = await addUser({
         username: values.username,
         password: values.password,
-        roleId: values.roleId,
+        role_id: values.role_id,
+        phone: values.phone,
+        email: values.email,
       });
       if (err) {
         message.error(err.message || err.msg);
       } else if (res.status === 0) {
         message.success("添加成功");
         this.setState({ isShowAddModal: false });
-
-        //二级选一级添加
-        if (
-          this.state.parentId !== "0" &&
-          values.parentId !== this.state.parentId
-        ) {
-          this.getCategoryList("0");
-        }
-        //一级选二级添加
-        if (
-          this.state.parentId === "0" &&
-          values.parentId !== this.state.parentId
-        ) {
-          let { categoryList = [] } = this.state;
-          const target = categoryList.find(
-            (item) => item._id === values.parentId
-          );
-          if (target) {
-            this.showSubCategory(target);
-          }
-        } else if (values.parentId === this.state.parentId) {
-          this.getCategoryList();
-        }
+        this.getUserList();
+      } else {
+        message.error(res.msg);
       }
     };
     this.addFormRef?.current
@@ -143,11 +154,12 @@ export default class Category extends Component {
   handleUpdateOk = async () => {
     console.log("handleUpdateOk");
     let fn = async (values) => {
-      const username = values.username;
-      console.log("username", username);
       const [err, res] = await updateUser({
-        userId: this.state.currentUser._id,
-        username,
+        _id: this.state.currentUser._id,
+        username: values.username,
+        role_id: values.role_id,
+        phone: values.phone,
+        email: values.email,
       });
       if (err) {
         message.error(err.message);
@@ -155,6 +167,8 @@ export default class Category extends Component {
         message.success("更新成功");
         this.setState({ isShowUpdateModal: false });
         this.getUserList();
+      } else {
+        message.error(res.msg);
       }
     };
     this.updateFormRef?.current
@@ -170,25 +184,7 @@ export default class Category extends Component {
   };
   render() {
     const { isLoading } = this.state;
-    const title =
-      this.state.parentId === "0" ? (
-        <h1>用户列表</h1>
-      ) : (
-        <span>
-          <LinkButton
-            onClick={() =>
-              this.setState({
-                parentId: "0",
-                parentName: "",
-                subCategoryList: [],
-              })
-            }
-          >
-            用户列表
-          </LinkButton>
-          <span> -- {this.state.parentName}</span>
-        </span>
-      );
+    const title = <h1>用户列表</h1>;
     const extra = (
       <LinkButton onClick={() => this.setState({ isShowAddModal: true })}>
         <PlusOutlined />
@@ -213,32 +209,32 @@ export default class Category extends Component {
           />
         </Card>
         <Modal
-          title="添加分类"
+          title="添加用户"
           closable={{ "aria-label": "Custom Close Button" }}
           destroyOnClose={true}
           open={this.state.isShowAddModal}
           onOk={this.handleAddOk}
           onCancel={this.handleAddCancel}
         >
-          {/* <AddForm
+          <UserForm
             setFormRef={(formRef) => (this.addFormRef = formRef)}
-            categoryList={categoryList}
-            parentId={this.state.parentId}
-          /> */}
+            roleList={roleList}
+          />
         </Modal>
         <Modal
-          title="更新分类"
+          title="更新用户"
           closable={{ "aria-label": "Custom Close Button" }}
           destroyOnClose={true}
           open={this.state.isShowUpdateModal}
           onOk={this.handleUpdateOk}
           onCancel={this.handleUpdateCancel}
         >
-          {/* <UpdateForm
+          <UpdateUserForm
             handleUpdateOk={this.handleUpdateOk}
             setFormRef={(formRef) => (this.updateFormRef = formRef)}
-            username={this.state.currentUser.username}
-          /> */}
+            roleList={roleList}
+            user={this.state.currentUser}
+          />
         </Modal>
       </div>
     );
