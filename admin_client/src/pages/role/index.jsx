@@ -18,7 +18,10 @@ import { getRoleList, addRole, updateRole } from "../../api/role";
 import moment from "moment";
 import { PAGE_SIZE } from "../../utils/constant";
 import memoryUtils from "../../utils/memoryUtils";
-export default class Role extends Component {
+import storageUtils from "../../utils/storageUtils";
+import withRouter from "../../utils/withRouter";
+
+class Role extends Component {
   state = {
     isShowAddModal: false,
     isShowAuthModal: false,
@@ -145,6 +148,15 @@ export default class Role extends Component {
       auth_name: memoryUtils.user.username,
     });
     if (res && res.status === 0) {
+      if (this.state.selectedRole._id === memoryUtils.user.role._id) {
+        message.info("当前用户权限已经变更,请重新登录");
+        storageUtils.removeUser();
+        // 清除内存中的用户信息
+        memoryUtils.user = {};
+        // 跳转到登录页面
+        this.props.navigate("/login");
+        return;
+      }
       message.success("设置成功");
       this.setState({
         roles: this.state.roles.map((role) => {
@@ -258,3 +270,5 @@ export default class Role extends Component {
     );
   }
 }
+
+export default withRouter(Role);

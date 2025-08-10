@@ -14,6 +14,7 @@ const menuList = [
   {
     title: "首页",
     key: "/home",
+    isPublic: true,
     icon: <PieChartOutlined />,
   },
   {

@@ -8,7 +8,11 @@ import { getUserList, updateUser, addUser, deleteUser } from "../../api/user";
 import UserForm from "./UserForm";
 import UpdateUserForm from "./UpdateUserForm";
 import { formatDate } from "../../utils/dateUtils";
-export default class Category extends Component {
+import memoryUtils from "../../utils/memoryUtils";
+import storageUtils from "../../utils/storageUtils";
+import withRouter from "../../utils/withRouter";
+
+class User extends Component {
   state = {
     userList: [],
     roleList: [],
@@ -95,6 +99,16 @@ export default class Category extends Component {
       if (err) {
         message.error(err.message || err.msg);
       } else if (res.status === 0) {
+        //当前用户的角色被删除
+        if (user._id === memoryUtils.user._id) {
+          message.info("当前用户角色已经被删除,请重新注册");
+          storageUtils.removeUser();
+          // 清除内存中的用户信息
+          memoryUtils.user = {};
+          // 跳转到登录页面
+          this.props.navigate("/login");
+          return;
+        }
         message.success("删除成功");
         this.getUserList();
       }
@@ -164,6 +178,19 @@ export default class Category extends Component {
       if (err) {
         message.error(err.message);
       } else if (res.status === 0) {
+        //当前用户的角色被修改
+        if (
+          this.state.currentUser._id === memoryUtils.user._id &&
+          values.role_id !== memoryUtils.user.role._id
+        ) {
+          message.info("当前用户角色已经变更,请重新登录");
+          storageUtils.removeUser();
+          // 清除内存中的用户信息
+          memoryUtils.user = {};
+          // 跳转到登录页面
+          this.props.navigate("/login");
+          return;
+        }
         message.success("更新成功");
         this.setState({ isShowUpdateModal: false });
         this.getUserList();
@@ -240,3 +267,4 @@ export default class Category extends Component {
     );
   }
 }
+export default withRouter(User);
