@@ -250,6 +250,7 @@ export default class Home extends Component {
             columns={columns}
             loading={isLoading}
             pagination={{
+              current: this.pageNum,
               pageSize: PAGE_SIZE,
               total: this.state.total,
               showTotal: (total) => `共${total}条`,
