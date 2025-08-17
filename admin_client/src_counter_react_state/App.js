@@ -1,10 +1,6 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { increment, decrement } from "./redux/action";
+
 export default class App extends Component {
-  static propTypes = {
-    store: PropTypes.object.isRequired,
-  };
   constructor(props) {
     super(props);
     this.state = {
@@ -14,42 +10,53 @@ export default class App extends Component {
   }
   handleClickAdd = () => {
     let value = this.selectRef.current.value * 1;
-    this.props.store.dispatch(increment(value));
+    this.setState({
+      count: this.state.count + value,
+    });
   };
   handleClickMinus = () => {
     let value = this.selectRef.current.value * 1;
-    this.props.store.dispatch(decrement(value));
+    this.setState({
+      count: this.state.count - value,
+    });
   };
   handleClickOddAdd = () => {
     if (this.state.count % 2 === 1) {
       let value = this.selectRef.current.value * 1;
-      this.props.store.dispatch(increment(value));
+      this.setState({
+        count: this.state.count + value,
+      });
     }
   };
   handleClickOddMinus = () => {
     let value = this.selectRef.current.value * 1;
     if (this.state.count % 2 === 1) {
-      this.props.store.dispatch(decrement(value));
+      this.setState({
+        count: this.state.count - value,
+      });
     }
   };
   handleClickAsyncAdd = () => {
     setTimeout(() => {
       let value = this.selectRef.current.value * 1;
-      this.props.store.dispatch(increment(value));
+      this.setState({
+        count: this.state.count + value,
+      });
     }, 1000);
   };
   handleClickAsyncMinus = () => {
     setTimeout(() => {
       let value = this.selectRef.current.value * 1;
-      this.props.store.dispatch(decrement(value));
+      this.setState({
+        count: this.state.count - value,
+      });
     }, 1000);
   };
 
   render() {
-    console.log(this.props.store.getState());
     return (
       <div>
-        点击次数{this.props.store.getState()}
+        点击次数{this.state.count}
         <br />
         <select ref={this.selectRef}>
           <option value="1">1</option>
