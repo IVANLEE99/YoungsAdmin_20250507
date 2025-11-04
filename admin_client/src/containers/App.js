@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes, { func, number } from "prop-types";
-import { increment, decrement } from "../redux/action";
+import { increment, decrement, incrementAsync } from "../redux/action";
 import { connect } from "react-redux";
 import Counter from "../components/Counter";
 
@@ -18,4 +18,5 @@ import Counter from "../components/Counter";
 export default connect((state) => ({ count: state }), {
   increment,
   decrement,
+  incrementAsync,
 })(Counter);

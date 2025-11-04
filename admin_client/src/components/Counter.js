@@ -6,6 +6,7 @@ export default class Counter extends Component {
     count: PropTypes.number.isRequired,
     increment: PropTypes.func.isRequired,
     decrement: PropTypes.func.isRequired,
+    incrementAsync: PropTypes.func.isRequired,
   };
   constructor(props) {
     super(props);
@@ -35,10 +36,12 @@ export default class Counter extends Component {
     }
   };
   handleClickAsyncAdd = () => {
-    setTimeout(() => {
-      let value = this.selectRef.current.value * 1;
-      this.props.increment(value);
-    }, 1000);
+    let value = this.selectRef.current.value * 1;
+    this.props.incrementAsync(value);
+    // setTimeout(() => {
+    //   let value = this.selectRef.current.value * 1;
+    //   this.props.increment(value);
+    // }, 1000);
   };
   handleClickAsyncMinus = () => {
     setTimeout(() => {
