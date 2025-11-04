@@ -1,13 +1,27 @@
-import { INCREMENT, DECREMENT } from "./action-types";
+import { combineReducers } from "redux";
+import memoryUtils from "../utils/memoryUtils";
+import storageUtils from "../utils/storageUtils";
+import { SET_HEAD_TITLE } from "./actions-type";
 
-export const countReducer = (state = 1, action) => {
-  console.log(state, action);
+const initHeadTitle = "首页";
+function headTitle(state = initHeadTitle, action) {
   switch (action.type) {
-    case INCREMENT:
-      return state + action.number;
-    case DECREMENT:
-      return state - action.number;
+    case SET_HEAD_TITLE:
+      return action.data;
     default:
       return state;
   }
-};
+}
+
+const initUser = storageUtils.getUser();
+function user(state = initUser, action) {
+  switch (action.type) {
+    default:
+      return state;
+  }
+}
+
+export default combineReducers({
+  headTitle,
+  user,
+});

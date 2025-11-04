@@ -6,6 +6,8 @@ import logo from "../../assets/images/logo.png";
 import menuList from "../../config/menuConfig";
 import withRouter from "../../utils/withRouter";
 import memoryUtils from "../../utils/memoryUtils";
+import { connect } from "react-redux";
+import { setHeadTitle } from "../../redux/action";
 
 class LeftNav extends Component {
   constructor(props) {
@@ -43,13 +45,18 @@ class LeftNav extends Component {
     let path = this.props.location.pathname;
     return menuList.reduce((pre, item) => {
       if (this.hasAuth(item)) {
+        if (item.key === path || path.indexOf(item.ley) === 0) {
+          this.handleClick(item);
+        }
         pre.push({
           key: item.key,
           icon: item.icon,
           label: item.children ? (
             item.title
           ) : (
-            <Link to={item.key}>{item.title}</Link>
+            <Link to={item.key} onClick={() => this.handleClick(item)}>
+              {item.title}
+            </Link>
           ),
           children: item.children ? this.getItem(item.children) : null,
         });
@@ -63,6 +70,11 @@ class LeftNav extends Component {
       }
       return pre;
     }, []);
+  };
+  handleClick = (data) => {
+    console.log(data, "data");
+    this.props.setHeadTitle(data.title || "");
+    // (_item) => this.props.setHeadTitle(_item.item.title)
   };
   render() {
     const path = this.props.location.pathname;
@@ -87,4 +99,12 @@ class LeftNav extends Component {
     );
   }
 }
-export default withRouter(LeftNav);
+// function mapDispatchToProps(dispatch) {
+//   return {
+//     increment: (number) => dispatch(increment(number)),
+//     decrement: (number) => dispatch(decrement(number)),
+//   };
+// }
+export default connect((state) => ({}), {
+  setHeadTitle,
+})(withRouter(LeftNav));

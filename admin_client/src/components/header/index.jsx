@@ -9,6 +9,7 @@ import menuList from "../../config/menuConfig";
 import { Modal } from "antd";
 import storageUtils from "../../utils/storageUtils";
 import LinkButton from "../linkButton";
+import { connect } from "react-redux";
 
 class Header extends Component {
   state = {
@@ -106,7 +107,7 @@ class Header extends Component {
         // 清除内存中的用户信息
         memoryUtils.user = {};
         // 跳转到登录页面
-        this.props.navigate("/login");
+        this.props.navigate("/home");
       },
     });
   };
@@ -115,7 +116,8 @@ class Header extends Component {
   }
   render() {
     const userName = memoryUtils.user.username;
-    const title = this.getTitle(menuList);
+    // const title = this.getTitle(menuList);
+    const title = this.props.headTitle;
     return (
       <div className="header">
         <div className="header-top">
@@ -138,4 +140,7 @@ class Header extends Component {
     );
   }
 }
-export default withRouter(Header);
+export default connect(
+  (state) => ({ headTitle: state.headTitle }),
+  {}
+)(withRouter(Header));
