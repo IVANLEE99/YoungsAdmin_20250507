@@ -1,0 +1,18 @@
+import React, { Component } from "react";
+import PropTypes, { func, number } from "prop-types";
+import { increment, decrement } from "../redux/action";
+import { connect } from "react-redux";
+import Counter from "../components/Counter";
+
+function mapStateToProps(state) {
+  return {
+    count: state,
+  };
+}
+function mapDispatchToProps(dispatch) {
+  return {
+    increment: (number) => dispatch(increment(number)),
+    decrement: (number) => dispatch(decrement(number)),
+  };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Counter);
